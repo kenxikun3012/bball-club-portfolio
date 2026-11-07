@@ -1,0 +1,80 @@
+{
+  "summary": [
+    { "value": "12", "label": "Conference titles" },
+    { "value": "3", "label": "National finals" },
+    { "value": "27", "label": "All-league players" },
+    { "value": "1985", "label": "First season" }
+  ],
+  "items": [
+    {
+      "year": "2025",
+      "title": "Conference champions",
+      "competition": "Regional University League — Division II",
+      "result": "Champions",
+      "note": "Beat City University 78–71 in the final. Daniel Okafor named finals MVP."
+    },
+    {
+      "year": "2024",
+      "title": "National semi-finalist",
+      "competition": "National University Championship",
+      "result": "Semi-finalist",
+      "note": "First national semi-final in club history. Lost by four to the eventual champions."
+    },
+    {
+      "year": "2023",
+      "title": "Conference runners-up",
+      "competition": "Regional University League — Division II",
+      "result": "Runners-up",
+      "note": "A rebuild season that ended one game short. Nine returning players the year after."
+    },
+    {
+      "year": "2022",
+      "title": "Conference champions",
+      "competition": "Regional University League — Division II",
+      "result": "Champions",
+      "note": "Undefeated at home. The defence allowed under 60 points in six straight games."
+    },
+    {
+      "year": "2021",
+      "title": "Regional champions",
+      "competition": "Regional Invitational",
+      "result": "Champions",
+      "note": "Won the regional invitational in overtime after a 19-point comeback."
+    },
+    {
+      "year": "2019",
+      "title": "National quarter-finalist",
+      "competition": "National University Championship",
+      "result": "Quarter-finalist",
+      "note": "Second national tournament appearance. The club's best defensive rating to date."
+    },
+    {
+      "year": "2017",
+      "title": "Conference champions",
+      "competition": "Regional University League — Division II",
+      "result": "Champions",
+      "note": "Club-record 21 wins. Five players finished the season in double figures."
+    },
+    {
+      "year": "2015",
+      "title": "League champions",
+      "competition": "City University League",
+      "result": "Champions",
+      "note": "The first title after the club moved to the regional league structure."
+    },
+    {
+      "year": "2013",
+      "title": "Regional runners-up",
+      "competition": "Regional Invitational",
+      "result": "Runners-up",
+      "note": "Lost the final by two. The squad that convinced the university to fund travel."
+    },
+    {
+      "year": "2011",
+      "title": "First national appearance",
+      "competition": "National University Championship",
+      "result": "Qualified",
+      "note": "A wildcard invitation after winning 16 of 18 games. The start of the modern era."
+    }
+  ]
+}

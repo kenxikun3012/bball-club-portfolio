@@ -1,0 +1,89 @@
+{
+  "intro": "Open gyms, league nights, travel weekends and the odd 6 AM practice. This is what the club actually does with its time.",
+  "gallery": [
+    {
+      "title": "Season opener at Main Campus Gym",
+      "category": "Game day",
+      "date": "October 2025",
+      "description": "The competitive squad opens the league season in front of a packed home court.",
+      "image": null,
+      "featured": true
+    },
+    {
+      "title": "Tuesday morning practice",
+      "category": "Training",
+      "date": "September 2025",
+      "description": "Shooting drills before the 9 AM seminar — the club's most attended session.",
+      "image": null
+    },
+    {
+      "title": "Three cities, five games",
+      "category": "Travel",
+      "date": "February 2025",
+      "description": "The annual conference tour: two overnight stays, five games in seven days.",
+      "image": null
+    },
+    {
+      "title": "Community clinic for first-years",
+      "category": "Community",
+      "date": "November 2024",
+      "description": "Club players coaching first-year students through their first proper practice.",
+      "image": null
+    },
+    {
+      "title": "Alumni night at the old court",
+      "category": "Community",
+      "date": "August 2024",
+      "description": "Forty years of former players back on the same hardwood for one evening.",
+      "image": null
+    },
+    {
+      "title": "Trophy night",
+      "category": "Awards",
+      "date": "March 2024",
+      "description": "The club's annual awards evening: MVP, most improved, and the unsung award.",
+      "image": null
+    },
+    {
+      "title": "Open tryouts",
+      "category": "Recruitment",
+      "date": "September 2025",
+      "description": "Two hours, three drills, one scrimmage. Everyone gets a fair look.",
+      "image": null
+    },
+    {
+      "title": "Strength and conditioning",
+      "category": "Training",
+      "date": "October 2025",
+      "description": "Two lifting slots a week at the shared athletic facility.",
+      "image": null
+    },
+    {
+      "title": "Away day at City University",
+      "category": "Game day",
+      "date": "January 2025",
+      "description": "The short road trip that decides most seasons.",
+      "image": null
+    }
+  ],
+  "upcoming": [
+    {
+      "date": "2025-11-14",
+      "title": "Home opener vs. City University",
+      "type": "Fixture",
+      "location": "Main Campus Gymnasium, 19:00"
+    },
+    {
+      "date": "2025-11-22",
+      "title": "Open gym — all students welcome",
+      "type": "Open gym",
+      "location": "Court 2, 10:00 – 12:00"
+    },
+    {
+      "date": "2025-12-05",
+      "title": "Alumni vs. current squad",
+      "type": "Community",
+      "location": "Main Campus Gymnasium, 18:30"
+    }
+  ]
+}

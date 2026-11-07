@@ -1,0 +1,67 @@
+{
+  "name": "University Basketball Club",
+  "shortName": "UBC",
+  "university": "Your University",
+  "founded": 1985,
+  "headlineWordmark": "UNIVERSITY BASKETBALL CLUB",
+  "tagline": "A club for players, by players.",
+  "seoDescription": "The University Basketball Club — student-run since 1985. Roster, honours, activities and how to join the club.",
+  "homeCourt": "Main Campus Gymnasium",
+  "address": "University Sports Complex, Court 1",
+  "email": "basketball.club@your-university.edu",
+  "instagram": "@ubc.basketball",
+  "hero": {
+    "eyebrow": "A club for players, by players",
+    "headline": ["ON THE", "HARDWOOD."],
+    "intro": "Forty years of pickup runs, practice drills and Sunday league battles. We keep the game honest, and we keep it ours.",
+    "introHighlight": "keep the game honest",
+    "primaryCta": "Join the club",
+    "secondaryCta": "Meet the team",
+    "caption": "Courtside, 2025 season opener"
+  },
+  "stats": [
+    { "value": "12", "label": "Conference titles" },
+    { "value": "24", "label": "Active players" },
+    { "value": "38", "label": "Years on campus" },
+    { "value": "6", "label": "Coaching staff" }
+  ],
+  "training": [
+    { "day": "Tuesday", "time": "6:30 – 8:30 PM", "note": "Team practice" },
+    { "day": "Thursday", "time": "6:30 – 8:30 PM", "note": "Team practice" },
+    { "day": "Saturday", "time": "9:00 – 11:00 AM", "note": "Scrimmage + open gym" }
+  ],
+  "about": {
+    "intro": "Founded in 1985 in a borrowed gym with two borrowed balls, the club has grown into one of the university's steadiest sporting communities — still student-run, still showing up early.",
+    "paragraphs": [
+      "We are a competitive club, not a varsity program, and that is exactly the point. Every season starts with open tryouts, every lineup is earned at practice, and every member pays dues that go straight back into travel, kit and court time.",
+      "The club runs two squads — a competitive side in the regional university league and a development side for newer players — plus open gym sessions that are open to any student, member or not.",
+      "Off the court we run coaching clinics for local schools, host an alumni game every homecoming, and keep a seat at the table for anyone who has ever worn the shirt. Once you're in the club, you're in it for good."
+    ],
+    "facilities": [
+      {
+        "title": "Two full courts",
+        "detail": "Main Campus Gymnasium, bookable by members outside practice hours."
+      },
+      {
+        "title": "Strength room",
+        "detail": "Shared athletic facility with a dedicated club lifting slot twice a week."
+      },
+      {
+        "title": "Video room",
+        "detail": "Game film and clip review sessions before every league fixture."
+      }
+    ],
+    "facts": [
+      { "label": "Founded", "value": "1985" },
+      { "label": "Home court", "value": "Main Campus Gymnasium" },
+      { "label": "Members", "value": "24 players + 6 staff" },
+      { "label": "League", "value": "Regional University League, Division II" }
+    ],
+    "milestones": [
+      { "year": "1985", "text": "Club founded with 11 founding members." },
+      { "year": "1998", "text": "First regional league championship." },
+      { "year": "2011", "text": "First appearance at the national tournament." },
+      { "year": "2025", "text": "Twelfth conference title, third national semi-final." }
+    ]
+  }
+}

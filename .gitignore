@@ -1,0 +1,10 @@
+node_modules
+.next
+out
+.npm-cache
+.chrome-profile
+theme-preview
+next-env.d.ts
+*.tsbuildinfo
+.DS_Store
+.env*.local

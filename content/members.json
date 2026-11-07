@@ -1,0 +1,134 @@
+{
+  "players": [
+    {
+      "number": 4,
+      "name": "Avery Rivera",
+      "position": "Point Guard",
+      "year": "Junior",
+      "height": "6 ft 1 in",
+      "hometown": "Riverside",
+      "bio": "The engine. Sets the pace, finds the corner shooter, and never lets a possession die quietly."
+    },
+    {
+      "number": 7,
+      "name": "Daniel Okafor",
+      "position": "Shooting Guard",
+      "year": "Senior",
+      "height": "6 ft 4 in",
+      "hometown": "Northgate",
+      "bio": "Club captain and the best catch-and-shoot threat on the roster. Two-time all-league selection."
+    },
+    {
+      "number": 8,
+      "name": "Marcus Lee",
+      "position": "Small Forward",
+      "year": "Sophomore",
+      "height": "6 ft 6 in",
+      "hometown": "Harborview",
+      "bio": "Long, disruptive, and the first name on the scouting report. Lives at the rim on the break."
+    },
+    {
+      "number": 9,
+      "name": "Tobias Grant",
+      "position": "Point Guard",
+      "year": "Freshman",
+      "height": "5 ft 11 in",
+      "hometown": "Eastfield",
+      "bio": "Joined through open tryouts and made the rotation by November. Fearless in transition."
+    },
+    {
+      "number": 11,
+      "name": "Elias Haddad",
+      "position": "Power Forward",
+      "year": "Senior",
+      "height": "6 ft 7 in",
+      "hometown": "Westbrook",
+      "bio": "Screens, rebounds, talks. The club's unofficial defensive coordinator on the floor."
+    },
+    {
+      "number": 12,
+      "name": "Noah Bennett",
+      "position": "Center",
+      "year": "Junior",
+      "height": "6 ft 9 in",
+      "hometown": "Fairmont",
+      "bio": "Anchors the paint and finishes everything within three feet. League blocks leader, 2024."
+    },
+    {
+      "number": 15,
+      "name": "Kenji Watanabe",
+      "position": "Shooting Guard",
+      "year": "Junior",
+      "height": "6 ft 3 in",
+      "hometown": "Lakeside",
+      "bio": "Movement shooter. Runs off screens like it is a full-time job, because for him it is."
+    },
+    {
+      "number": 20,
+      "name": "Samuel Achebe",
+      "position": "Power Forward",
+      "year": "Freshman",
+      "height": "6 ft 8 in",
+      "hometown": "Southbank",
+      "bio": "Raw, relentless, and improving every week. The development squad's leading scorer."
+    },
+    {
+      "number": 22,
+      "name": "Luca Ferretti",
+      "position": "Small Forward",
+      "year": "Senior",
+      "height": "6 ft 5 in",
+      "hometown": "Old Town",
+      "bio": "Does the unglamorous work: cuts, closeouts, extra passes. Coaches' pick three years running."
+    },
+    {
+      "number": 23,
+      "name": "Isaiah Brooks",
+      "position": "Shooting Guard",
+      "year": "Graduate",
+      "height": "6 ft 2 in",
+      "hometown": "Riverside",
+      "bio": "Back for a fifth year while finishing a master's. Club record holder for career threes."
+    },
+    {
+      "number": 33,
+      "name": "Omar Haddad",
+      "position": "Center",
+      "year": "Sophomore",
+      "height": "6 ft 10 in",
+      "hometown": "Westbrook",
+      "bio": "Rim protection and a surprisingly soft touch. Learned the game from his older brother Elias."
+    },
+    {
+      "number": 44,
+      "name": "Peter Nowak",
+      "position": "Power Forward",
+      "year": "Junior",
+      "height": "6 ft 8 in",
+      "hometown": "Northgate",
+      "bio": "Stretch four with a quick release. Joined the club after two years on the intramural circuit."
+    }
+  ],
+  "staff": [
+    {
+      "name": "Dana Whitfield",
+      "role": "Head coach",
+      "detail": "Eleven seasons with the club, two national semi-final runs."
+    },
+    {
+      "name": "Ray Mensah",
+      "role": "Assistant coach",
+      "detail": "Runs the development squad and the Saturday open gym."
+    },
+    {
+      "name": "Priya Shah",
+      "role": "Team manager",
+      "detail": "Fixtures, travel, kit — everything that makes game day happen."
+    },
+    {
+      "name": "Dr. Elena Rossi",
+      "role": "Athletic trainer",
+      "detail": "Injury prevention and return-to-play programs for both squads."
+    }
+  ]
+}

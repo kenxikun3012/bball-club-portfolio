@@ -1,0 +1,203 @@
+@import "tailwindcss";
+
+/* ------------------------------------------------------------------ */
+/*  Design tokens — Hardwood Editorial                                 */
+/*  Warm paper, ink, burnt orange, court geometry, serif display type. */
+/*  Spacing grid: every layout spacing value is a multiple of 8px.     */
+/* ------------------------------------------------------------------ */
+@theme {
+  --color-cream-50: #fbf7ef;
+  --color-cream-100: #f7f2e8;
+  --color-cream-200: #ede4d4;
+  --color-cream-300: #e0d3bd;
+  --color-cream-400: #cbb99c;
+
+  --color-ink: #17140f;
+  --color-ink-soft: #37312a;
+  --color-muted: #8a7b63;
+
+  --color-accent: #c2410c;
+  --color-accent-soft: #e0703a;
+  --color-accent-wash: #f3ddcd;
+
+  /* Secondary — gold: horizontal rules, highlights and tinted shades.
+     Not used for small text on cream (contrast is decorative only). */
+  --color-secondary: #eec166;
+  --color-secondary-soft: #f2d394;
+  --color-secondary-wash: #f8ecd2;
+  --color-secondary-ink: #8a651a;
+
+  /* Two families only: Fraunces for display, Manrope for everything else. */
+  --font-display: var(--font-fraunces), Georgia, "Times New Roman", serif;
+  --font-sans: var(--font-manrope), ui-sans-serif, system-ui, -apple-system,
+    "Segoe UI", sans-serif;
+
+  --shadow-editorial: 0 24px 60px -32px rgb(23 20 15 / 0.45);
+}
+
+@layer base {
+  html {
+    scroll-behavior: smooth;
+    -webkit-text-size-adjust: 100%;
+  }
+
+  body {
+    @apply bg-cream-100 font-sans text-ink text-base;
+    background-image:
+      radial-gradient(120% 80% at 100% 0%, #f9f4e9 0%, transparent 55%),
+      radial-gradient(90% 60% at 0% 100%, #f3ecdd 0%, transparent 60%);
+    background-attachment: fixed;
+  }
+
+  ::selection {
+    background: var(--color-accent);
+    color: var(--color-cream-50);
+  }
+
+  :focus-visible {
+    outline: 2px solid var(--color-accent);
+    outline-offset: 3px;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    html {
+      scroll-behavior: auto;
+    }
+  }
+}
+
+/* ------------------------------------------------------------------ */
+/*  Type scale — one ladder, used everywhere.                         */
+/*  12 / 14 / 16 / 18 / 20 / 24 / 32 / 40 / 56 / 96 px               */
+/* ------------------------------------------------------------------ */
+@layer components {
+  .type-display {
+    font-family: var(--font-display);
+    font-size: clamp(3rem, 8.5vw, 6rem);
+    line-height: 0.94;
+    letter-spacing: -0.03em;
+    font-weight: 400;
+  }
+
+  .type-h2 {
+    font-family: var(--font-display);
+    font-size: clamp(2rem, 4.2vw, 3.5rem);
+    line-height: 1.02;
+    letter-spacing: -0.025em;
+    font-weight: 400;
+  }
+
+  .type-h3 {
+    font-family: var(--font-display);
+    font-size: 1.5rem;
+    line-height: 1.3;
+    letter-spacing: -0.01em;
+    font-weight: 400;
+  }
+
+  .type-h4 {
+    font-family: var(--font-display);
+    font-size: 1.25rem;
+    line-height: 1.35;
+    font-weight: 400;
+  }
+
+  .type-numeral {
+    font-family: var(--font-display);
+    font-size: 2rem;
+    line-height: 1;
+    letter-spacing: -0.02em;
+    font-weight: 400;
+  }
+
+  .type-stat {
+    font-family: var(--font-display);
+    font-size: 2.5rem;
+    line-height: 1;
+    letter-spacing: -0.03em;
+    font-weight: 400;
+  }
+
+  .type-lead {
+    font-size: 1.125rem;
+    line-height: 1.7;
+  }
+
+  .type-body {
+    font-size: 1rem;
+    line-height: 1.7;
+  }
+
+  .type-small {
+    font-size: 0.875rem;
+    line-height: 1.6;
+  }
+
+  .type-label {
+    font-family: var(--font-sans);
+    font-size: 0.75rem;
+    line-height: 1.3;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    font-weight: 600;
+  }
+}
+
+@layer utilities {
+  /* Infinite editorial ticker */
+  .marquee {
+    animation: marquee 42s linear infinite;
+    will-change: transform;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .marquee {
+      animation: none;
+    }
+  }
+
+  /* Scroll reveal — content stays visible without JS (progressive enhancement).
+     The `js` class is added to <html> by a tiny inline script in the layout. */
+  .reveal {
+    opacity: 1;
+    transform: none;
+  }
+
+  html.js .reveal {
+    opacity: 0;
+    transform: translateY(16px);
+    transition:
+      opacity 0.7s cubic-bezier(0.22, 1, 0.36, 1),
+      transform 0.7s cubic-bezier(0.22, 1, 0.36, 1);
+  }
+
+  html.js .reveal.is-visible {
+    opacity: 1;
+    transform: none;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    html.js .reveal {
+      opacity: 1;
+      transform: none;
+      transition: none;
+    }
+  }
+
+  .text-balance {
+    text-wrap: balance;
+  }
+
+  .text-pretty {
+    text-wrap: pretty;
+  }
+}
+
+@keyframes marquee {
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(-50%);
+  }
+}
