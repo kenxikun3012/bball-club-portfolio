@@ -181,7 +181,9 @@ components/
   hero.tsx            # hero, court line art, stat card, rotating badge
   ticker.tsx          # infinite stats ticker
   about.tsx           # club story, facilities, milestones
-  roster.tsx          # player cards + staff
+  roster.tsx          # player grid (desktop) + mobile carousel + staff
+  player-card.tsx     # player card shared by grid and carousel
+  roster-carousel.tsx # swipeable mobile carousel with arrows/progress
   achievements.tsx    # honours timeline + summary card
   activities.tsx      # gallery grid + upcoming events
   contact.tsx         # join section wrapper

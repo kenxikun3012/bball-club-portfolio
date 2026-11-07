@@ -1,6 +1,7 @@
-import { MemberPhoto } from "@/components/photo";
 import { Reveal } from "@/components/reveal";
 import { SectionHeading } from "@/components/section-heading";
+import { PlayerCard } from "@/components/player-card";
+import { RosterCarousel } from "@/components/roster-carousel";
 import { players, staff } from "@/lib/content";
 
 export function Roster() {
@@ -32,41 +33,19 @@ export function Roster() {
           />
         </Reveal>
 
-        <ul className="mt-16 grid grid-cols-1 gap-x-8 gap-y-12 sm:grid-cols-2 lg:grid-cols-4">
+        {/* Desktop / large screens: card grid */}
+        <ul className="mt-16 hidden grid-cols-2 gap-x-8 gap-y-12 lg:grid lg:grid-cols-4">
           {players.map((player, index) => (
             <li key={player.number}>
               <Reveal delay={(index % 4) * 60}>
-                <article className="group">
-                  <div className="relative overflow-hidden rounded-sm border border-ink/10 bg-cream-200">
-                    <MemberPhoto
-                      name={player.name}
-                      src={player.image}
-                      label={`No. ${player.number}`}
-                      variant={(player.number + index) % 3}
-                      className="aspect-[4/5] w-full transition-transform duration-700 ease-out group-hover:scale-[1.02]"
-                    />
-                    <span
-                      aria-hidden="true"
-                      className="absolute right-2 top-2 type-h3 text-ink/30"
-                    >
-                      {player.number}
-                    </span>
-                  </div>
-                  <h3 className="mt-4 type-h4">{player.name}</h3>
-                  <p className="mt-2 type-label text-secondary-ink">
-                    {player.position}
-                  </p>
-                  <p className="mt-4 type-small text-ink-soft/75">{player.bio}</p>
-                  <div className="mt-4 flex items-center justify-between border-t border-ink/10 pt-4 type-small text-muted">
-                    <span>{player.year}</span>
-                    <span>{player.height}</span>
-                    <span>{player.hometown}</span>
-                  </div>
-                </article>
+                <PlayerCard player={player} index={index} />
               </Reveal>
             </li>
           ))}
         </ul>
+
+        {/* Mobile / tablet: swipeable carousel */}
+        <RosterCarousel players={players} />
 
         <Reveal>
           <div className="mt-24 border-t border-secondary/40 pt-8">
