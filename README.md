@@ -254,6 +254,30 @@ under *Site settings → Environment variables*.
 `npm run build && npm start` behind HTTPS (or a reverse proxy). Allow your server's IP in
 Atlas, and make sure the proxy forwards `X-Forwarded-For` so IP rate limiting works.
 
+### Troubleshooting: “No Next.js output directory” on Vercel
+
+The project used to be a static export (`out/`). Next.js now builds to `.next`, so a Vercel
+project that still has the old **Output Directory = `out`** setting will fail with a missing
+output directory. Fix it once in the project settings:
+
+1. **Project → Settings → Build & Output Settings**
+2. **Framework Preset:** `Next.js`
+3. **Build Command:** leave empty (or `npm run build`)
+4. **Output Directory:** **delete it / leave empty** — never set `out` or `.next` for Next.js
+5. **Node.js Version:** `22.x`
+6. **Save**, then **Deployments → ⋯ → Redeploy** and **uncheck “Use existing Build Cache”**
+
+If the settings look wrong or the option is unavailable, delete the Vercel project and
+re-import the GitHub repo (root directory = repo root), then add the environment variables
+again and deploy.
+
+Verify the deployed commit on GitHub contains `app/api/join/route.ts` and a `next.config.ts`
+**without** `output: "export"`. A correct local build produces `.next/BUILD_ID`; it does
+not produce `out/`.
+
+Runtime env vars needed on Vercel: `MONGODB_URI`, `MONGODB_DB`, `IP_HASH_SALT` — they are
+not required at build time.
+
 ---
 
 ## Project structure

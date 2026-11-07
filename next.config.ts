@@ -9,11 +9,11 @@ const nextConfig: NextConfig = {
   typescript: {
     ignoreBuildErrors: true,
   },
-  experimental: {
-    // Build in-process worker threads instead of spawning child processes.
-    // This lets `next build` run in sandboxed / restricted environments.
-    workerThreads: true,
-  },
+  // Worker threads are only needed in restricted sandboxes that block child
+  // processes; production builds (Vercel/Netlify) use the default workers.
+  ...(process.env.NEXT_WORKER_THREADS === "1"
+    ? { experimental: { workerThreads: true } }
+    : {}),
   async headers() {
     return [
       {
