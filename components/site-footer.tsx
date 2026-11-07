@@ -36,6 +36,7 @@ export function SiteFooter() {
               {[
                 { href: "#club", label: "The club" },
                 { href: "#team", label: "Team" },
+                { href: "#hall-of-fame", label: "Hall of Fame" },
                 { href: "#trophies", label: "Trophies" },
                 { href: "#activities", label: "Activities" },
                 { href: "#join", label: "Join" },

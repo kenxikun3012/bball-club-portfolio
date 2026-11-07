@@ -1,7 +1,7 @@
 import { cn } from "@/lib/cn";
 import { initials } from "@/lib/content";
 
-function CourtArt({ variant = 0 }: { variant?: number }) {
+function CourtArt({ variant = 0, dark = false }: { variant?: number; dark?: boolean }) {
   const shifts = [
     { cx: 300, cy: 210, r: 150, rotate: 0 },
     { cx: 140, cy: 260, r: 170, rotate: 25 },
@@ -13,7 +13,10 @@ function CourtArt({ variant = 0 }: { variant?: number }) {
     <svg
       viewBox="0 0 400 500"
       preserveAspectRatio="xMidYMid slice"
-      className="absolute inset-0 h-full w-full text-ink/20"
+      className={cn(
+        "absolute inset-0 h-full w-full",
+        dark ? "text-secondary/25" : "text-ink/20",
+      )}
       aria-hidden="true"
     >
       <g
@@ -58,8 +61,12 @@ interface PhotoProps {
   alt?: string;
   /** Small caption shown on placeholder art. */
   label?: string;
+  /** Hide the placeholder caption (for small thumbnails). */
+  showLabel?: boolean;
   /** Shows big initials on roster placeholders. */
   init?: string;
+  /** Placeholder treatment: warm paper or dark court. */
+  tone?: "light" | "dark";
   className?: string;
   variant?: number;
   priority?: boolean;
@@ -73,11 +80,15 @@ export function Photo({
   src,
   alt = "",
   label,
+  showLabel = true,
   init,
+  tone = "light",
   className,
   variant = 0,
   priority = false,
 }: PhotoProps) {
+  const dark = tone === "dark";
+
   if (src) {
     return (
       // eslint-disable-next-line @next/next/no-img-element
@@ -92,21 +103,53 @@ export function Photo({
   }
 
   return (
-    <div className={cn("relative overflow-hidden bg-cream-200", className)}>
-      <div className="absolute inset-0 bg-[radial-gradient(120%_90%_at_80%_10%,#f7e7c6_0%,#e8d7b6_70%,#dcc79f_100%)]" />
-      <CourtArt variant={variant} />
-      <div className="absolute inset-0 bg-gradient-to-t from-ink/[0.13] via-transparent to-cream-50/30" />
+    <div
+      className={cn(
+        "relative overflow-hidden",
+        dark ? "bg-[#1a140d]" : "bg-cream-200",
+        className,
+      )}
+    >
+      <div
+        className={cn(
+          "absolute inset-0",
+          dark
+            ? "bg-[radial-gradient(120%_90%_at_80%_10%,#332817_0%,#1f1810_70%,#14100b_100%)]"
+            : "bg-[radial-gradient(120%_90%_at_80%_10%,#f7e7c6_0%,#e8d7b6_70%,#dcc79f_100%)]",
+        )}
+      />
+      <CourtArt variant={variant} dark={dark} />
+      <div
+        className={cn(
+          "absolute inset-0",
+          dark
+            ? "bg-gradient-to-t from-ink/70 via-transparent to-transparent"
+            : "bg-gradient-to-t from-ink/[0.13] via-transparent to-cream-50/30",
+        )}
+      />
       {init ? (
         <span
           aria-hidden="true"
-          className="absolute inset-0 flex items-center justify-center type-stat text-ink/25"
+          className={cn(
+            "absolute inset-0 flex items-center justify-center type-stat",
+            dark ? "text-secondary/20" : "text-ink/25",
+          )}
         >
           {init}
         </span>
       ) : null}
-      <span className="absolute bottom-2 left-2 rounded-full border border-secondary/50 bg-cream-50/85 px-2 py-2 type-label text-ink/55 backdrop-blur-sm">
-        {label ?? "Photo placeholder"}
-      </span>
+      {showLabel ? (
+        <span
+          className={cn(
+            "absolute bottom-2 left-2 rounded-full px-2 py-2 type-label backdrop-blur-sm",
+            dark
+              ? "border border-secondary/40 bg-ink/70 text-cream-200/70"
+              : "border border-secondary/50 bg-cream-50/85 text-ink/55",
+          )}
+        >
+          {label ?? "Photo placeholder"}
+        </span>
+      ) : null}
     </div>
   );
 }
@@ -117,18 +160,24 @@ export function MemberPhoto({
   className,
   variant = 0,
   src,
+  showLabel = true,
+  tone = "light",
 }: {
   name: string;
   label?: string;
   className?: string;
   variant?: number;
   src?: string | null;
+  showLabel?: boolean;
+  tone?: "light" | "dark";
 }) {
   return (
     <Photo
       src={src}
       init={initials(name)}
       label={label ?? name}
+      showLabel={showLabel}
+      tone={tone}
       alt={`Portrait of ${name}`}
       variant={variant}
       className={className}

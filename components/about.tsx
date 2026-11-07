@@ -1,7 +1,7 @@
 import { Photo } from "@/components/photo";
 import { Reveal } from "@/components/reveal";
 import { SectionHeading } from "@/components/section-heading";
-import { club } from "@/lib/content";
+import { club, initials } from "@/lib/content";
 
 export function About() {
   const { about } = club;
@@ -91,6 +91,38 @@ export function About() {
             </Reveal>
           </div>
         </div>
+
+        <Reveal delay={80}>
+          <div className="mt-16">
+            <div className="flex flex-col gap-2 border-t border-secondary/40 pt-8 sm:flex-row sm:items-end sm:justify-between">
+              <h3 className="type-h3">Club committee</h3>
+              <p className="type-label text-muted">Elected each September</p>
+            </div>
+            <ul className="mt-8 grid gap-8 sm:grid-cols-2 lg:grid-cols-3">
+              {club.committee.map((member) => (
+                <li
+                  key={member.role}
+                  className="border border-ink/10 bg-cream-50 p-6"
+                >
+                  <div className="flex items-start justify-between gap-4">
+                    <div>
+                      <p className="type-label text-secondary-ink">{member.role}</p>
+                      <p className="mt-4 type-h4">{member.name}</p>
+                      <p className="mt-2 type-label text-muted">{member.term}</p>
+                    </div>
+                    <span
+                      aria-hidden="true"
+                      className="flex h-16 w-16 shrink-0 items-center justify-center rounded-full bg-cream-200 type-h4 text-ink/40"
+                    >
+                      {initials(member.name)}
+                    </span>
+                  </div>
+                  <p className="mt-4 type-small text-ink-soft/75">{member.detail}</p>
+                </li>
+              ))}
+            </ul>
+          </div>
+        </Reveal>
 
         <Reveal delay={100}>
           <ol className="mt-16 grid gap-8 border-t border-secondary/40 pt-8 sm:grid-cols-2 lg:grid-cols-4">

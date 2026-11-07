@@ -1,0 +1,97 @@
+{
+  "intro": "The wall above the home court doesn't lie: retired numbers, graduated captains and the few players who genuinely changed this club. Inducted by the committee each homecoming.",
+  "retiredJerseys": [
+    {
+      "number": 4,
+      "name": "Avery Rivera",
+      "years": "2018–2022",
+      "note": "First All-American in club history — 1,842 career points."
+    },
+    {
+      "number": 7,
+      "name": "Daniel Okafor",
+      "years": "2019–2023",
+      "note": "Two conference titles and finals MVP in 2022."
+    },
+    {
+      "number": 12,
+      "name": "Noah Bennett",
+      "years": "2017–2021",
+      "note": "All-time blocks leader, captain for three seasons."
+    },
+    {
+      "number": 23,
+      "name": "Isaiah Brooks",
+      "years": "2016–2020",
+      "note": "825 career three-pointers — the club record."
+    }
+  ],
+  "inductees": [
+    {
+      "name": "Avery Rivera",
+      "years": "2018–2022",
+      "position": "Point Guard",
+      "jerseyNumber": 4,
+      "retiredJersey": true,
+      "inducted": "2022",
+      "impact": "Turned a mid-table club into a conference contender. 1,842 points and 612 assists, both club records.",
+      "quote": "The ball finds the right people when you play for each other.",
+      "image": null
+    },
+    {
+      "name": "Daniel Okafor",
+      "years": "2019–2023",
+      "position": "Shooting Guard",
+      "jerseyNumber": 7,
+      "retiredJersey": true,
+      "inducted": "2023",
+      "impact": "Two-time conference champion, 2022 finals MVP and still the standard for a two-way guard at this club.",
+      "quote": "Nobody remembers the shot; they remember the squad.",
+      "image": null
+    },
+    {
+      "name": "Noah Bennett",
+      "years": "2017–2021",
+      "position": "Center",
+      "jerseyNumber": 12,
+      "retiredJersey": true,
+      "inducted": "2021",
+      "impact": "All-time leader in blocks and rebounds, and captain for three of his four seasons.",
+      "quote": "Defence is a promise you keep every night.",
+      "image": null
+    },
+    {
+      "name": "Isaiah Brooks",
+      "years": "2016–2020",
+      "position": "Shooting Guard",
+      "jerseyNumber": 23,
+      "retiredJersey": true,
+      "inducted": "2020",
+      "impact": "Holds the club record for career three-pointers (825) and single-game threes (11).",
+      "quote": "Repetition is the only shortcut I ever found.",
+      "image": null
+    },
+    {
+      "name": "Maya Sinclair",
+      "years": "2017–2021",
+      "position": "Point Guard",
+      "jerseyNumber": 10,
+      "retiredJersey": true,
+      "inducted": "2021",
+      "impact": "Built the women's squad's first travel-league season and led the club in assists for four years.",
+      "quote": "We built the room we wished we had walked into.",
+      "image": null
+    },
+    {
+      "name": "Elena Rossi",
+      "years": "2014–2024",
+      "position": "Team manager",
+      "jerseyNumber": 0,
+      "retiredJersey": false,
+      "inducted": "2024",
+      "impact": "Ten seasons of fixtures, travel and fundraising — the reason the club still runs the way it does.",
+      "quote": "Clubs are run by the people who show up on the boring days.",
+      "image": null
+    }
+  ]
+}

@@ -22,7 +22,7 @@ export function Achievements() {
         <Reveal>
           <SectionHeading
             id="trophies-title"
-            index="03"
+            index="04"
             eyebrow="Honours"
             title={
               <>

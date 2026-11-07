@@ -2,6 +2,7 @@ import { Hero } from "@/components/hero";
 import { Ticker } from "@/components/ticker";
 import { About } from "@/components/about";
 import { Roster } from "@/components/roster";
+import { HallOfFame } from "@/components/hall-of-fame";
 import { Achievements } from "@/components/achievements";
 import { Activities } from "@/components/activities";
 import { Contact } from "@/components/contact";
@@ -14,6 +15,7 @@ export default function Home() {
       <Ticker />
       <About />
       <Roster />
+      <HallOfFame />
       <Achievements />
       <Activities />
       <Contact />

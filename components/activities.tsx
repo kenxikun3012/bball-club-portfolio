@@ -20,7 +20,7 @@ export function Activities() {
         <Reveal>
           <SectionHeading
             id="activities-title"
-            index="04"
+            index="05"
             eyebrow="Activities"
             title={
               <>

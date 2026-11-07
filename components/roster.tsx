@@ -1,8 +1,7 @@
 import { Reveal } from "@/components/reveal";
 import { SectionHeading } from "@/components/section-heading";
-import { PlayerCard } from "@/components/player-card";
-import { RosterCarousel } from "@/components/roster-carousel";
-import { players, staff } from "@/lib/content";
+import { RosterBoard } from "@/components/roster-board";
+import { rosters, staff } from "@/lib/content";
 
 export function Roster() {
   return (
@@ -25,27 +24,16 @@ export function Roster() {
             }
             intro={
               <>
-                Every lineup is <span className="text-secondary-ink">earned at practice</span>.
-                Positions are the coach&apos;s problem — the roster below is how the club
-                introduces itself.
+                Two squads, one standard. Start with the{" "}
+                <span className="text-secondary-ink">featured players</span> above, then
+                scan the full roster below — 12 starters and 12 development players in each
+                squad.
               </>
             }
           />
         </Reveal>
 
-        {/* Desktop / large screens: card grid */}
-        <ul className="mt-16 hidden grid-cols-2 gap-x-8 gap-y-12 lg:grid lg:grid-cols-4">
-          {players.map((player, index) => (
-            <li key={player.number}>
-              <Reveal delay={(index % 4) * 60}>
-                <PlayerCard player={player} index={index} />
-              </Reveal>
-            </li>
-          ))}
-        </ul>
-
-        {/* Mobile / tablet: swipeable carousel */}
-        <RosterCarousel players={players} />
+        <RosterBoard rosters={rosters} />
 
         <Reveal>
           <div className="mt-24 border-t border-secondary/40 pt-8">
@@ -57,9 +45,7 @@ export function Roster() {
               {staff.map((member) => (
                 <div key={member.name} className="border-t border-secondary/40 pt-4">
                   <dt className="type-h4">{member.name}</dt>
-                  <dd className="mt-2 type-label text-secondary-ink">
-                    {member.role}
-                  </dd>
+                  <dd className="mt-2 type-label text-secondary-ink">{member.role}</dd>
                   <dd className="mt-2 type-small text-ink-soft/75">{member.detail}</dd>
                 </div>
               ))}

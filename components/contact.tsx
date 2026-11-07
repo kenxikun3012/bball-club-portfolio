@@ -14,7 +14,7 @@ export function Contact() {
           <div className="md:col-span-5">
             <Reveal>
               <div className="flex items-center gap-4 type-label text-accent">
-                <span>05</span>
+                <span>06</span>
                 <span aria-hidden="true" className="h-px w-8 bg-secondary" />
                 <span>Join the club</span>
               </div>

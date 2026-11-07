@@ -2,6 +2,7 @@ import clubJson from "@/content/club.json";
 import membersJson from "@/content/members.json";
 import achievementsJson from "@/content/achievements.json";
 import activitiesJson from "@/content/activities.json";
+import hallOfFameJson from "@/content/hall-of-fame.json";
 
 /* ------------------------------------------------------------------ */
 /*  Types — keep these in sync with the JSON files in /content         */
@@ -28,6 +29,13 @@ export interface Milestone {
   text: string;
 }
 
+export interface CommitteeMember {
+  role: string;
+  name: string;
+  term: string;
+  detail: string;
+}
+
 export interface Club {
   name: string;
   shortName: string;
@@ -40,6 +48,10 @@ export interface Club {
   address: string;
   email: string;
   instagram: string;
+  /** Current season label, e.g. "2025/26" — used by the "Fresh hoopers" filter. */
+  currentSeason: string;
+  /** Club committee positions shown in The club section. */
+  committee: CommitteeMember[];
   hero: {
     eyebrow: string;
     headline: string[];
@@ -61,16 +73,36 @@ export interface Club {
   };
 }
 
-export interface Player {
+export type PlayerRole = "Captain" | "Ex-captain" | "Starter" | "Member";
+
+export interface RosterPlayer {
   number: number;
   name: string;
   position: string;
   year: string;
   height: string;
   hometown: string;
+  role: PlayerRole;
+  /** Shown in the featured carousel above the full grid. */
+  featured?: boolean;
+  /** Training sessions attended this month — drives the "Most active" filter. */
+  monthlySessions: number;
+  /** Drives the "Rising stars" filter (fast-improving year I–II players). */
+  risingStar?: boolean;
+  /** Season the player joined, e.g. "2025/26" — drives "Fresh hoopers". */
+  joined: string;
+  /** Personal awards — drives the "Achievers" filter. */
+  awards: string[];
   bio: string;
   /** Optional real photo path, e.g. "/photos/avery-rivera.jpg". */
   image?: string | null;
+}
+
+export interface RosterGroup {
+  id: string;
+  label: string;
+  shortLabel: string;
+  players: RosterPlayer[];
 }
 
 export interface StaffMember {
@@ -104,13 +136,38 @@ export interface UpcomingEvent {
   location: string;
 }
 
+export interface RetiredJersey {
+  number: number;
+  name: string;
+  years: string;
+  note: string;
+}
+
+export interface Inductee {
+  name: string;
+  years: string;
+  position: string;
+  jerseyNumber: number;
+  retiredJersey?: boolean;
+  inducted: string;
+  impact: string;
+  quote?: string;
+  image?: string | null;
+}
+
+export interface HallOfFame {
+  intro: string;
+  retiredJerseys: RetiredJersey[];
+  inductees: Inductee[];
+}
+
 /* ------------------------------------------------------------------ */
 /*  Content                                                            */
 /* ------------------------------------------------------------------ */
 
 export const club = clubJson as Club;
 
-export const players = membersJson.players as Player[];
+export const rosters = membersJson.rosters as RosterGroup[];
 export const staff = membersJson.staff as StaffMember[];
 
 export const achievements = [...(achievementsJson.items as Achievement[])].sort(
@@ -121,6 +178,9 @@ export const achievementSummary = achievementsJson.summary as Stat[];
 export const gallery = activitiesJson.gallery as GalleryItem[];
 export const activitiesIntro = activitiesJson.intro;
 export const upcoming = activitiesJson.upcoming as UpcomingEvent[];
+
+export const hallOfFame = hallOfFameJson as HallOfFame;
+export const currentSeason = club.currentSeason;
 
 /* ------------------------------------------------------------------ */
 /*  Small helpers used by several components                           */

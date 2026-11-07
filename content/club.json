@@ -10,6 +10,7 @@
   "address": "University Sports Complex, Court 1",
   "email": "basketball.club@your-university.edu",
   "instagram": "@ubc.basketball",
+  "currentSeason": "2025/26",
   "hero": {
     "eyebrow": "A club for players, by players",
     "headline": ["ON THE", "HARDWOOD."],
@@ -21,7 +22,7 @@
   },
   "stats": [
     { "value": "12", "label": "Conference titles" },
-    { "value": "24", "label": "Active players" },
+    { "value": "48", "label": "Active players" },
     { "value": "38", "label": "Years on campus" },
     { "value": "6", "label": "Coaching staff" }
   ],
@@ -29,6 +30,44 @@
     { "day": "Tuesday", "time": "6:30 – 8:30 PM", "note": "Team practice" },
     { "day": "Thursday", "time": "6:30 – 8:30 PM", "note": "Team practice" },
     { "day": "Saturday", "time": "9:00 – 11:00 AM", "note": "Scrimmage + open gym" }
+  ],
+  "committee": [
+    {
+      "role": "President",
+      "name": "Sofia Bennett",
+      "term": "2025/26",
+      "detail": "Chairs the committee, leads sponsorship and the annual budget."
+    },
+    {
+      "role": "Vice President",
+      "name": "Marcus Whitfield",
+      "term": "2025/26",
+      "detail": "Covers for the president and runs game-day operations."
+    },
+    {
+      "role": "Secretary",
+      "name": "Priya Raman",
+      "term": "2025/26",
+      "detail": "Minutes, membership records and the club calendar."
+    },
+    {
+      "role": "Treasurer",
+      "name": "Daniel Okoye",
+      "term": "2025/26",
+      "detail": "Dues, travel grants and the equipment fund."
+    },
+    {
+      "role": "Men's captain",
+      "name": "Avery Rivera",
+      "term": "2025/26",
+      "detail": "Player liaison for the men's squad."
+    },
+    {
+      "role": "Women's captain",
+      "name": "Maya Sinclair",
+      "term": "2025/26",
+      "detail": "Player liaison for the women's squad."
+    }
   ],
   "about": {
     "intro": "Founded in 1985 in a borrowed gym with two borrowed balls, the club has grown into one of the university's steadiest sporting communities — still student-run, still showing up early.",
@@ -54,7 +93,7 @@
     "facts": [
       { "label": "Founded", "value": "1985" },
       { "label": "Home court", "value": "Main Campus Gymnasium" },
-      { "label": "Members", "value": "24 players + 6 staff" },
+      { "label": "Members", "value": "48 players + 6 staff" },
       { "label": "League", "value": "Regional University League, Division II" }
     ],
     "milestones": [

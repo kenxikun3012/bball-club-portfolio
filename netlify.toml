@@ -1,11 +1,14 @@
 [build]
   command = "npm run build"
-  publish = "out"
+  publish = ".next"
 
 [build.environment]
   NODE_VERSION = "20"
 
-# Static export: clean URLs resolve to index.html automatically.
+# Next.js runtime support (SSR, API routes) on Netlify.
+[[plugins]]
+  package = "@netlify/plugin-nextjs"
+
 [[headers]]
   for = "/photos/*"
   [headers.values]

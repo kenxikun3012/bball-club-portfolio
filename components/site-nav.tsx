@@ -6,6 +6,7 @@ import { cn } from "@/lib/cn";
 const links = [
   { href: "#club", label: "The club" },
   { href: "#team", label: "Team" },
+  { href: "#hall-of-fame", label: "Legends" },
   { href: "#trophies", label: "Trophies" },
   { href: "#activities", label: "Activities" },
   { href: "#join", label: "Join" },
@@ -55,7 +56,7 @@ export function SiteNav() {
           </span>
         </a>
 
-        <nav aria-label="Primary" className="hidden items-center gap-8 lg:flex">
+        <nav aria-label="Primary" className="hidden items-center gap-6 lg:flex">
           {links.map((link) => (
             <a
               key={link.href}
