@@ -5,7 +5,7 @@ import { cn } from "@/lib/cn";
 import { FeaturedCarousel } from "@/components/featured-carousel";
 import { PlayerRow } from "@/components/player-row";
 import { Reveal } from "@/components/reveal";
-import { currentSeason, type RosterGroup, type RosterPlayer } from "@/lib/content";
+import { type RosterGroup, type RosterPlayer } from "@/lib/content";
 
 const FILTERS = [
   {
@@ -42,7 +42,11 @@ const FILTERS = [
 
 type FilterId = (typeof FILTERS)[number]["id"];
 
-function filterPlayers(players: RosterPlayer[], filter: FilterId): RosterPlayer[] {
+function filterPlayers(
+  players: RosterPlayer[],
+  filter: FilterId,
+  currentSeason: string,
+): RosterPlayer[] {
   switch (filter) {
     case "elite-starters":
       return players.filter((player) => player.role !== "Member");
@@ -82,7 +86,13 @@ function highlightFor(player: RosterPlayer, filter: FilterId): string | undefine
  * Roster board: men's / women's switch, filter drop-down, featured carousel
  * and the two-column grid of players matching the active filter.
  */
-export function RosterBoard({ rosters }: { rosters: RosterGroup[] }) {
+export function RosterBoard({
+  rosters,
+  currentSeason,
+}: {
+  rosters: RosterGroup[];
+  currentSeason: string;
+}) {
   const [activeId, setActiveId] = useState(rosters[0]?.id ?? "");
   const [filterId, setFilterId] = useState<FilterId>("all");
   const roster = rosters.find((item) => item.id === activeId) ?? rosters[0];
@@ -90,7 +100,7 @@ export function RosterBoard({ rosters }: { rosters: RosterGroup[] }) {
 
   const activeFilter = FILTERS.find((filter) => filter.id === filterId) ?? FILTERS[0];
   const featured = roster.players.filter((player) => player.featured);
-  const filtered = filterPlayers(roster.players, filterId);
+  const filtered = filterPlayers(roster.players, filterId, currentSeason);
 
   return (
     <div className="mt-16">

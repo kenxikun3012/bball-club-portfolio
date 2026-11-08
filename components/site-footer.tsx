@@ -1,6 +1,6 @@
-import { club } from "@/lib/content";
+import type { Club } from "@/lib/content";
 
-export function SiteFooter() {
+export function SiteFooter({ club }: { club: Club }) {
   const year = new Date().getFullYear();
 
   return (

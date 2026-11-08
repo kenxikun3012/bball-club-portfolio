@@ -1,9 +1,9 @@
 import { Reveal } from "@/components/reveal";
 import { SectionHeading } from "@/components/section-heading";
 import { HallOfFameCarousel } from "@/components/hall-of-fame-carousel";
-import { hallOfFame } from "@/lib/content";
+import type { HallOfFame as HallOfFameData } from "@/lib/content";
 
-export function HallOfFame() {
+export function HallOfFame({ hallOfFame }: { hallOfFame: HallOfFameData }) {
   return (
     <section
       id="hall-of-fame"

@@ -1,7 +1,7 @@
 import { Reveal } from "@/components/reveal";
 import { SectionHeading } from "@/components/section-heading";
-import { achievements, achievementSummary, club } from "@/lib/content";
 import { cn } from "@/lib/cn";
+import type { Achievement, Club, Stat } from "@/lib/content";
 
 function resultBadge(result: string) {
   const champion = result.toLowerCase() === "champions";
@@ -11,7 +11,15 @@ function resultBadge(result: string) {
   );
 }
 
-export function Achievements() {
+export function Achievements({
+  achievements,
+  achievementSummary,
+  club,
+}: {
+  achievements: Achievement[];
+  achievementSummary: Stat[];
+  club: Club;
+}) {
   return (
     <section
       id="trophies"

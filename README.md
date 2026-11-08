@@ -16,6 +16,10 @@ spacing value on an 8px grid. `npm run check:design` enforces both in CI.
 limited to 3 per email + 10 per IP per 24h, and protected against NoSQL injection and
 bot spam. See [Join form backend](#join-form-backend).
 
+**Admin dashboard:** `/admin` is protected by custom DB-backed sessions (scrypt passwords,
+httpOnly cookies, roles, login throttling, audit log). Phase 1 (auth + read-only views) is
+done — see [Admin dashboard](#admin-dashboard).
+
 ---
 
 ## Run it locally
@@ -23,7 +27,9 @@ bot spam. See [Join form backend](#join-form-backend).
 ```bash
 npm install
 cp .env.example .env.local   # then fill MONGODB_URI + IP_HASH_SALT
-npm run dev                  # → http://localhost:3000
+npm run db:seed              # seed content into MongoDB from content/*.json
+npm run admin:create -- you@example.com owner
+npm run dev                  # → http://localhost:3000 (public) · /admin (dashboard)
 ```
 
 Other scripts:
@@ -33,6 +39,8 @@ npm run build        # production build (server output in .next)
 npm run start        # serve the production build
 npm run typecheck    # tsc --noEmit
 npm run check:design # verify the 8px grid + type scale (CI-friendly)
+npm run db:seed      # idempotent content seed
+npm run admin:create # create/update an admin account (prompts if no ADMIN_PASSWORD)
 ```
 
 > `next build` skips its in-build type validation (`typescript.ignoreBuildErrors`) and uses
@@ -237,6 +245,79 @@ Change rate limits in `lib/rate-limit.ts` (`EMAIL_LIMIT`, `IP_LIMIT`, `WINDOW_MS
 
 ---
 
+## Admin dashboard
+
+**Phase 1 (done):** authentication, session security, seed tooling, admin shell, overview
+and read-only views of members, hall of fame, achievements, activities and applications.
+
+### Auth model
+
+- Custom **DB-backed sessions** — no JWT, no third-party auth service:
+  - `admin_users`: email (unique), role (`owner` / `editor` / `viewer`), scrypt password
+    hash (Node `crypto.scrypt`, N=32768), disabled flag, login timestamps.
+  - `admin_sessions`: SHA-256 hash of a random 32-byte token, user id, idle + absolute
+    expiry, IP hash, user agent; TTL index cleans expired sessions.
+  - Cookie `admin_session`: `HttpOnly`, `Secure` in production, `SameSite=Lax`, 8h idle /
+    7d maximum, revoked instantly on logout.
+- **Middleware** (`middleware.ts`, Edge) only checks cookie *presence* and redirects to
+  `/admin/login`; the admin layout and every `/api/admin/*` route validate the session
+  against MongoDB, so a forged cookie cannot grant access.
+- **Login hardening:** same-origin check, JSON-only, 4 KB body cap, generic errors,
+  per-email (5) + per-IP (20) attempts per 15 minutes.
+- **Audit trail:** `audit_logs` records logins/logouts (and future content changes) with
+  hashed IP and truncated user agent.
+
+### Accounts
+
+```bash
+npm run admin:create -- you@example.com owner   # create or reset an admin
+```
+
+There is no public signup and no password field exposed anywhere on the public site.
+A temporary password is printed once; reset it any time with `admin:create`.
+
+### Content in MongoDB
+
+`content/*.json` are seed files. `npm run db:seed` writes them into the `content`
+collection (`club`, `members`, `hallOfFame`, `achievements`, `activities` documents, each
+with `revision` and `updatedAt`). The public site reads from MongoDB on every request
+(pages are dynamic), so Phase 2 edits will publish immediately without a redeploy. If the
+database is unreachable the public site falls back to the JSON seed files.
+
+### Routes
+
+| Path | Purpose |
+| --- | --- |
+| `/admin` | overview: counts, recent applications, recent audit entries |
+| `/admin/members` · `/admin/hall-of-fame` · `/admin/achievements` · `/admin/activities` | read-only lists (CRUD in Phase 2) |
+| `/admin/applications` | read-only applications list (workflow + CSV in Phase 3) |
+| `/admin/settings` | account info + environment checks |
+| `/api/admin/auth/login` · `/logout` | session endpoints |
+
+### Phases
+
+| Phase | Scope | Status |
+| --- | --- | --- |
+| 1 | sessions/auth, seed + admin CLIs, admin shell, read-only views | ✅ done |
+| 2 | CRUD for members, hall of fame, achievements, activities + live revalidation | next |
+| 3 | application statuses, notes, CSV export, admin-user management | planned |
+| 4 | password change, audit viewer, hardening, docs | planned |
+
+### Testing
+
+With the server running (`npm start -- -p 3100`):
+
+```bash
+node --env-file=.env.local scripts/test-admin.mjs   # 15 auth/content checks
+```
+
+Covers redirects, CSRF rejection, wrong/valid login, httpOnly cookie, DB session storage,
+authenticated pages, middleware 401s, logout revocation, login rate limiting, and live
+DB-to-page content updates. It creates and removes an ephemeral admin, so it is safe to
+re-run.
+
+---
+
 ## Deploying
 
 The app now runs on a Node server (API routes + on-demand rendering), so plain static
@@ -308,17 +389,29 @@ components/
   reveal.tsx          # scroll-in animation (client, respects reduced motion)
   section-heading.tsx # numbered editorial section header
 app/api/join/route.ts # POST endpoint: validation, rate limiting, MongoDB insert
-content/              # ← edit your content here (JSON)
+app/api/admin/auth/login/route.ts  # admin session login
+app/api/admin/auth/logout/route.ts # admin session revoke
+app/admin/            # admin dashboard (login + protected route group)
+middleware.ts         # edge gate for /admin and /api/admin (cookie presence)
+content/              # ← seed data (JSON) — runtime content lives in MongoDB
 lib/
-  content.ts          # typed content loaders + helpers
+  content.ts          # content types + helpers
+  content-db.ts       # Mongo content repository (+ JSON fallback)
   validation.ts       # zod schema + sanitizers (server-side truth)
   rate-limit.ts       # hashed-key rolling window limits
   mongodb.ts          # cached client + indexes
+  auth.ts             # scrypt passwords, DB sessions, guards, login throttling
+  audit.ts            # append-only audit log
+  admin-queries.ts    # admin read models (applications, audit)
+  http.ts             # client IP, origin + content-type guards
   env.ts              # lazy env access
   form-options.ts     # shared position/year options
   cn.ts               # class name helper
 scripts/
-  test-join.mjs       # API security/validation integration tests
+  seed-content.mjs    # content/*.json → MongoDB
+  create-admin.mjs    # create/update admin accounts
+  test-join.mjs       # join API security/validation tests
+  test-admin.mjs      # admin auth + live-content tests
   test-mongo.mjs      # MongoDB connectivity check
 public/photos/        # ← drop real photos here
 theme-preview/        # design mockups generated during the theme selection

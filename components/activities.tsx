@@ -1,15 +1,22 @@
 import { Photo } from "@/components/photo";
 import { Reveal } from "@/components/reveal";
 import { SectionHeading } from "@/components/section-heading";
+import { cn } from "@/lib/cn";
 import {
-  activitiesIntro,
   formatEventDate,
+  type GalleryItem,
+  type UpcomingEvent,
+} from "@/lib/content";
+
+export function Activities({
+  activitiesIntro,
   gallery,
   upcoming,
-} from "@/lib/content";
-import { cn } from "@/lib/cn";
-
-export function Activities() {
+}: {
+  activitiesIntro: string;
+  gallery: GalleryItem[];
+  upcoming: UpcomingEvent[];
+}) {
   return (
     <section
       id="activities"

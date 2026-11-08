@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { cn } from "@/lib/cn";
+import type { Club } from "@/lib/content";
 
 const links = [
   { href: "#club", label: "The club" },
@@ -12,7 +13,7 @@ const links = [
   { href: "#join", label: "Join" },
 ];
 
-export function SiteNav() {
+export function SiteNav({ club }: { club: Club }) {
   const [open, setOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
 
@@ -51,8 +52,10 @@ export function SiteNav() {
             U
           </span>
           <span className="flex flex-col gap-2 leading-none">
-            <span className="font-display tracking-[-0.01em]">University Basketball</span>
-            <span className="type-label text-muted">Club · Est. 1985</span>
+            <span className="font-display tracking-[-0.01em]">
+              {club.name.replace(/\s*Club$/i, "")}
+            </span>
+            <span className="type-label text-muted">Club · Est. {club.founded}</span>
           </span>
         </a>
 

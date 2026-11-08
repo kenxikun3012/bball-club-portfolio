@@ -9,9 +9,9 @@ export const POSITIONS = [
 ] as const;
 
 export const YEARS = [
-  "Freshman",
-  "Sophomore",
-  "Junior",
+  "Fresher",
+  "Year II",
+  "Year III",
   "Senior",
   "Graduate",
 ] as const;

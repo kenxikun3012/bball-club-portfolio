@@ -1,8 +1,8 @@
 import { Reveal } from "@/components/reveal";
 import { JoinForm } from "@/components/join-form";
-import { club } from "@/lib/content";
+import type { Club } from "@/lib/content";
 
-export function Contact() {
+export function Contact({ club }: { club: Club }) {
   return (
     <section
       id="join"
@@ -24,8 +24,8 @@ export function Contact() {
                 the <span className="text-secondary-ink">court.</span>
               </h2>
               <p className="mt-6 max-w-md type-lead text-ink-soft">
-                We recruit every September, but the door stays{" "}
-                <span className="text-secondary-ink">open all year</span>. Come to an open gym,
+                We recruit every December, but the door stays{" "}
+                <span className="text-secondary-ink">open all year</span>. Come to the court,
                 say hello, and see if the club fits. No experience needed for the development
                 squad.
               </p>
@@ -86,7 +86,7 @@ export function Contact() {
                   </span>
                 </div>
                 <div className="mt-8">
-                  <JoinForm />
+                  <JoinForm club={club} />
                 </div>
               </div>
             </Reveal>

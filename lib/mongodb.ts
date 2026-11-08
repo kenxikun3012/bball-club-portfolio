@@ -54,4 +54,19 @@ async function ensureIndexes(db: Db): Promise<void> {
     { expiresAt: 1 },
     { name: "expires_ttl", expireAfterSeconds: 0 },
   );
+
+  // Admin authentication + audit.
+  await db.collection("admin_users").createIndex(
+    { email: 1 },
+    { unique: true, name: "email_unique" },
+  );
+  await db.collection("admin_sessions").createIndexes([
+    { key: { tokenHash: 1 }, unique: true, name: "token_unique" },
+    { key: { expiresAt: 1 }, name: "expires_ttl", expireAfterSeconds: 0 },
+  ]);
+  await db.collection("auth_rate_limits").createIndex(
+    { expiresAt: 1 },
+    { name: "expires_ttl", expireAfterSeconds: 0 },
+  );
+  await db.collection("audit_logs").createIndex({ createdAt: -1 }, { name: "created" });
 }

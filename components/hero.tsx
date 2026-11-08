@@ -1,9 +1,9 @@
 import { Photo } from "@/components/photo";
 import { Reveal } from "@/components/reveal";
 import { Highlighted } from "@/components/highlight";
-import { club } from "@/lib/content";
+import type { Club } from "@/lib/content";
 
-export function Hero() {
+export function Hero({ club }: { club: Club }) {
   const [lineOne, lineTwo] = club.hero.headline;
   const titles = club.stats[0];
 

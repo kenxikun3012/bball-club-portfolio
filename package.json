@@ -11,7 +11,9 @@
     "start": "next start",
     "preview": "next start",
     "typecheck": "tsc --noEmit",
-    "check:design": "node scripts/check-design.mjs"
+    "check:design": "node scripts/check-design.mjs",
+    "db:seed": "node --env-file=.env.local scripts/seed-content.mjs",
+    "admin:create": "node --env-file=.env.local scripts/create-admin.mjs"
   },
   "dependencies": {
     "mongodb": "^6.10.0",

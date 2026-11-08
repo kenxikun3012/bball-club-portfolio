@@ -1,9 +1,9 @@
 import { Photo } from "@/components/photo";
 import { Reveal } from "@/components/reveal";
 import { SectionHeading } from "@/components/section-heading";
-import { club, initials } from "@/lib/content";
+import { initials, type Club } from "@/lib/content";
 
-export function About() {
+export function About({ club }: { club: Club }) {
   const { about } = club;
 
   return (

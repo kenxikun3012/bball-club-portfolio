@@ -1,12 +1,7 @@
-import { club } from "@/lib/content";
+import type { Stat } from "@/lib/content";
 
-const items = [
-  `Est. ${club.founded}`,
-  ...club.stats.map((stat) => `${stat.value} ${stat.label}`),
-  "Main Campus Gymnasium",
-];
-
-export function Ticker() {
+export function Ticker({ stats, founded }: { stats: Stat[]; founded: number }) {
+  const items = [`Est. ${founded}`, ...stats.map((stat) => `${stat.value} ${stat.label}`), "Main Campus Gymnasium"];
   return (
     <div
       aria-hidden="true"

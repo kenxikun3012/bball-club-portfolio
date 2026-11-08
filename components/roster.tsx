@@ -1,9 +1,17 @@
 import { Reveal } from "@/components/reveal";
 import { SectionHeading } from "@/components/section-heading";
 import { RosterBoard } from "@/components/roster-board";
-import { rosters, staff } from "@/lib/content";
+import type { RosterGroup, StaffMember } from "@/lib/content";
 
-export function Roster() {
+export function Roster({
+  rosters,
+  staff,
+  currentSeason,
+}: {
+  rosters: RosterGroup[];
+  staff: StaffMember[];
+  currentSeason: string;
+}) {
   return (
     <section
       id="team"
@@ -33,7 +41,7 @@ export function Roster() {
           />
         </Reveal>
 
-        <RosterBoard rosters={rosters} />
+        <RosterBoard rosters={rosters} currentSeason={currentSeason} />
 
         <Reveal>
           <div className="mt-24 border-t border-secondary/40 pt-8">

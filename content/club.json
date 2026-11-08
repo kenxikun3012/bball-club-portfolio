@@ -1,106 +1,107 @@
 {
-  "name": "University Basketball Club",
-  "shortName": "UBC",
-  "university": "Your University",
+  "name": "Yangon Technological University Basketball Club",
+  "shortName": "YTU-FLAMES",
+  "university": "Yangon Technological University",
   "founded": 1985,
-  "headlineWordmark": "UNIVERSITY BASKETBALL CLUB",
-  "tagline": "A club for players, by players.",
-  "seoDescription": "The University Basketball Club — student-run since 1985. Roster, honours, activities and how to join the club.",
-  "homeCourt": "Main Campus Gymnasium",
-  "address": "University Sports Complex, Court 1",
-  "email": "basketball.club@your-university.edu",
-  "instagram": "@ubc.basketball",
-  "currentSeason": "2025/26",
+  "headlineWordmark": "YANGON TECHNOLOGICAL UNIVERSITY BASKETBALL CLUB",
+  "tagline": "Hoopers' club, run by hoopers.",
+  "seoDescription": "The YTU Basketball Club — student-rerun since 2022. Roster, honours, activities and how to join the club.",
+  "homeCourt": "YTU Baskertball Court",
+  "address": "Near Canteen and University Clinic, Yangon Technological University, Yangon, Myanmar",
+  "email": "No official email yet, can contact heinkhantzay326@gmail.com",
+  "instagram": "No Official Instagram yet, can contact brillikenxi",
+  "currentSeason": "2025/2026",
   "hero": {
-    "eyebrow": "A club for players, by players",
-    "headline": ["ON THE", "HARDWOOD."],
-    "intro": "Forty years of pickup runs, practice drills and Sunday league battles. We keep the game honest, and we keep it ours.",
+    "eyebrow": "Hoopers' club, run by hoopers.",
+    "headline": ["IGNITE THE", "FLOOR."],
+    "intro": "Four years of pickup runs, practice drills and Evening battles. We keep the game honest, and we keep it ours.",
     "introHighlight": "keep the game honest",
     "primaryCta": "Join the club",
     "secondaryCta": "Meet the team",
     "caption": "Courtside, 2025 season opener"
   },
   "stats": [
-    { "value": "12", "label": "Conference titles" },
-    { "value": "48", "label": "Active players" },
-    { "value": "38", "label": "Years on campus" },
-    { "value": "6", "label": "Coaching staff" }
+    { "value": "2", "label": "Regional Top 3" },
+    { "value": "40+", "label": "Active players" },
+    { "value": "4", "label": "Years on campus" },
+    { "value": "4", "label": "Coaching staff" }
   ],
   "training": [
-    { "day": "Tuesday", "time": "6:30 – 8:30 PM", "note": "Team practice" },
+    { "day": "Wednesday", "time": "4:00 – 5:30 PM", "note": "Team practice" },
     { "day": "Thursday", "time": "6:30 – 8:30 PM", "note": "Team practice" },
-    { "day": "Saturday", "time": "9:00 – 11:00 AM", "note": "Scrimmage + open gym" }
+    { "day": "Saturday", "time": "Any Convenient Time", "note": "Training session at Kyaikkasan" }
   ],
   "committee": [
     {
       "role": "President",
-      "name": "Sofia Bennett",
-      "term": "2025/26",
+      "name": "Wai Linn Aung",
+      "batch": "9th Batch",
       "detail": "Chairs the committee, leads sponsorship and the annual budget."
     },
     {
       "role": "Vice President",
-      "name": "Marcus Whitfield",
-      "term": "2025/26",
+      "name": "Khant Zay Heinn",
+      "batch": "10th Batch",
       "detail": "Covers for the president and runs game-day operations."
     },
     {
       "role": "Secretary",
       "name": "Priya Raman",
-      "term": "2025/26",
+      "batch": "11th Batch",
       "detail": "Minutes, membership records and the club calendar."
     },
     {
       "role": "Treasurer",
       "name": "Daniel Okoye",
-      "term": "2025/26",
+      "batch": "12th Batch",
       "detail": "Dues, travel grants and the equipment fund."
     },
     {
       "role": "Men's captain",
-      "name": "Avery Rivera",
-      "term": "2025/26",
+      "name": "Khant Zay Heinn",
+      "batch": "2025/26",
       "detail": "Player liaison for the men's squad."
     },
     {
       "role": "Women's captain",
-      "name": "Maya Sinclair",
-      "term": "2025/26",
+      "name": "Shwe Eain Linn aka Alex",
+      "batch": "10th Batch",
       "detail": "Player liaison for the women's squad."
     }
   ],
   "about": {
-    "intro": "Founded in 1985 in a borrowed gym with two borrowed balls, the club has grown into one of the university's steadiest sporting communities — still student-run, still showing up early.",
+    "intro": "Founded in late 2010s in the main campus court, the club has grown into one of the university's steadiest sporting communities — still student-run, still showing up early. Later rebranded as the YTU Flames, the club has been a regular in the regional university league.",
     "paragraphs": [
       "We are a competitive club, not a varsity program, and that is exactly the point. Every season starts with open tryouts, every lineup is earned at practice, and every member pays dues that go straight back into travel, kit and court time.",
       "The club runs two squads — a competitive side in the regional university league and a development side for newer players — plus open gym sessions that are open to any student, member or not.",
-      "Off the court we run coaching clinics for local schools, host an alumni game every homecoming, and keep a seat at the table for anyone who has ever worn the shirt. Once you're in the club, you're in it for good."
+      "Off the court we are family;brothers and sisters who show up for each other, on the court and off. We are a student-run club, and we are proud of it."
     ],
     "facilities": [
       {
-        "title": "Two full courts",
-        "detail": "Main Campus Gymnasium, bookable by members outside practice hours."
+        "title": "One full court",
+        "detail": "Campus basketball, always open for members outside practice hours."
       },
       {
-        "title": "Strength room",
-        "detail": "Shared athletic facility with a dedicated club lifting slot twice a week."
+        "title": "Gym room",
+        "detail": "Shared athletic facility with other students."
       },
       {
-        "title": "Video room",
+        "title": "Video room(Soon)",
         "detail": "Game film and clip review sessions before every league fixture."
       }
     ],
     "facts": [
-      { "label": "Founded", "value": "1985" },
-      { "label": "Home court", "value": "Main Campus Gymnasium" },
-      { "label": "Members", "value": "48 players + 6 staff" },
-      { "label": "League", "value": "Regional University League, Division II" }
+      { "label": "Re-branded", "value": "2022" },
+      { "label": "Home court", "value": "YTU Basketball Court" },
+      { "label": "Members", "value": "40+ players + 4 staff" },
+      { "label": "League", "value": "Regional University Leagues and other Third-party leagues" }
     ],
     "milestones": [
-      { "year": "1985", "text": "Club founded with 11 founding members." },
-      { "year": "1998", "text": "First regional league championship." },
-      { "year": "2011", "text": "First appearance at the national tournament." },
-      { "year": "2025", "text": "Twelfth conference title, third national semi-final." }
+      { "year": "2022", "text": "Club rerun with new committee members." },
+      { "year": "2023", "text": "Rebranded as the YTU Flames." },
+      { "year": "2025", "text": "Reformed the women's squad." },
+      { "year": "early-2026", "text": "Men's and Women's squads achieved Bronze and Silver medals respectively in the Yangon University Invitational." },
+      { "year": "mid-2026", "text": "Men's squad represent Insein District in Chief Minister's Invitational Cup" }
     ]
   }
 }

@@ -1,8 +1,8 @@
 "use client";
 
 import { useState } from "react";
-import { club } from "@/lib/content";
 import { POSITIONS, YEARS } from "@/lib/form-options";
+import type { Club } from "@/lib/content";
 
 type Status = "idle" | "sending" | "success" | "error";
 
@@ -20,7 +20,7 @@ function FieldError({ id, message }: { id: string; message?: string }) {
   );
 }
 
-export function JoinForm() {
+export function JoinForm({ club }: { club: Club }) {
   const [status, setStatus] = useState<Status>("idle");
   const [feedback, setFeedback] = useState("");
   const [errors, setErrors] = useState<Record<string, string>>({});
@@ -118,7 +118,7 @@ export function JoinForm() {
             type="text"
             required
             autoComplete="name"
-            placeholder="Alex Morgan"
+            placeholder="Your Name"
             aria-invalid={Boolean(errors.name)}
             aria-describedby={errors.name ? "join-name-error" : undefined}
             className={fieldClass}
@@ -135,7 +135,7 @@ export function JoinForm() {
             type="email"
             required
             autoComplete="email"
-            placeholder="you@your-university.edu"
+            placeholder="youremail@gmail.com"
             aria-invalid={Boolean(errors.email)}
             aria-describedby={errors.email ? "join-email-error" : undefined}
             className={fieldClass}
@@ -156,7 +156,7 @@ export function JoinForm() {
             required
             inputMode="tel"
             autoComplete="tel"
-            placeholder="+1 555 123 4567"
+            placeholder="+95 9 123 456 789"
             aria-invalid={Boolean(errors.phone)}
             aria-describedby={errors.phone ? "join-phone-error" : undefined}
             className={fieldClass}
