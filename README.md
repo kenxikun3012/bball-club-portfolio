@@ -18,7 +18,8 @@ bot spam. See [Join form backend](#join-form-backend).
 
 **Admin dashboard:** `/admin` is protected by custom DB-backed sessions (scrypt passwords,
 httpOnly cookies, roles, login throttling, audit log). Phase 1 (auth + read-only views) is
-done — see [Admin dashboard](#admin-dashboard).
+done — see [Admin dashboard](#admin-dashboard). Remaining development steps are documented
+in [handover.md](handover.md).
 
 ---
 
