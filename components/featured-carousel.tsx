@@ -82,7 +82,10 @@ export function FeaturedCarousel({
       <div
         ref={trackRef}
         onScroll={handleScroll}
-        className="-mx-6 mt-4 flex snap-x snap-mandatory gap-8 overflow-x-auto overscroll-x-contain px-6 pb-2 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden md:-mx-10 md:px-10"
+        tabIndex={0}
+        role="group"
+        aria-label="Featured players, scrollable"
+        className="-mx-6 mt-4 flex snap-x snap-mandatory gap-8 overflow-x-auto overscroll-x-contain px-6 pb-2 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden md:-mx-10 md:px-10 focus-visible:outline-2 focus-visible:outline-accent"
       >
         {players.map((player, index) => (
           <div

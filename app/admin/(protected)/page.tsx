@@ -34,8 +34,8 @@ export default async function AdminOverviewPage() {
         <p className="type-label text-secondary-ink">Control room</p>
         <h1 className="mt-4 type-h2">Overview.</h1>
         <p className="mt-2 max-w-lg type-small text-muted">
-          Read-only in Phase 1. Content editing and application management arrive in the next
-          phases.
+          Content editing is live for members, hall of fame, achievements and activities.
+          Application workflow and admin management arrive in the next phases.
         </p>
       </header>
 

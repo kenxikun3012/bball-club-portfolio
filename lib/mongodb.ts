@@ -47,6 +47,8 @@ async function ensureIndexes(db: Db): Promise<void> {
     { key: { email: 1, createdAt: -1 }, name: "email_created" },
     { key: { ipHash: 1, createdAt: -1 }, name: "ip_created" },
     { key: { createdAt: -1 }, name: "created" },
+    { key: { status: 1, createdAt: -1 }, name: "status_created" },
+    { key: { email: 1 }, name: "email" },
   ]);
 
   // Rolling-window counters; expired documents are removed by the TTL index.
@@ -68,5 +70,9 @@ async function ensureIndexes(db: Db): Promise<void> {
     { expiresAt: 1 },
     { name: "expires_ttl", expireAfterSeconds: 0 },
   );
-  await db.collection("audit_logs").createIndex({ createdAt: -1 }, { name: "created" });
+  await db.collection("audit_logs").createIndexes([
+    { key: { createdAt: -1 }, name: "created" },
+    { key: { action: 1, createdAt: -1 }, name: "action_created" },
+    { key: { actorEmail: 1, createdAt: -1 }, name: "actor_created" },
+  ]);
 }

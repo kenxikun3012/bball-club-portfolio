@@ -12,7 +12,8 @@ export async function POST(request: Request) {
     return NextResponse.json({ ok: false, message: "Request blocked." }, { status: 403 });
   }
 
-  const session = await getAdminSession();
+  // Users forced to change their password must still be able to sign out.
+  const session = await getAdminSession({ allowMustChange: true });
   if (session) {
     await destroyAdminSession(session.token);
     await logAudit({

@@ -68,7 +68,16 @@ export interface Club {
   };
 }
 
-export type PlayerRole = "Captain" | "Ex-captain" | "Starter" | "Member";
+export const PLAYER_ROLES = [
+  "Captain",
+  "Ex-captain",
+  "Starter",
+  "Member",
+  "Ace",
+  "Elite",
+] as const;
+
+export type PlayerRole = (typeof PLAYER_ROLES)[number];
 
 export interface RosterPlayer {
   number: number;

@@ -1,5 +1,7 @@
+import { AdminPasswordForm } from "@/components/admin-password-form";
 import { getAdminSession } from "@/lib/auth";
 import { readEnv } from "@/lib/env";
+import { isImageKitConfigured } from "@/lib/imagekit";
 
 export default async function AdminSettingsPage() {
   const session = await getAdminSession();
@@ -8,6 +10,7 @@ export default async function AdminSettingsPage() {
     { label: "MongoDB URI", ok: Boolean(readEnv("MONGODB_URI")) },
     { label: "Database name", ok: Boolean(readEnv("MONGODB_DB")) },
     { label: "IP hash salt", ok: Boolean(readEnv("IP_HASH_SALT")) },
+    { label: "ImageKit uploads (optional)", ok: isImageKitConfigured() },
   ];
 
   return (
@@ -16,8 +19,8 @@ export default async function AdminSettingsPage() {
         <p className="type-label text-secondary-ink">Configuration</p>
         <h1 className="mt-4 type-h2">Settings.</h1>
         <p className="mt-2 max-w-lg type-small text-muted">
-          Account details and environment checks. Club content editing arrives in Phase 2,
-          admin management in Phase 3.
+          Account details and environment checks. Club content editing is available from the
+          Members, Hall of Fame, Achievements and Activities sections.
         </p>
       </header>
 
@@ -35,6 +38,15 @@ export default async function AdminSettingsPage() {
             <dd className="type-small text-secondary-ink">{session?.user.role ?? "—"}</dd>
           </div>
         </dl>
+      </section>
+
+      <section aria-labelledby="admin-password" className="mt-16">
+        <h2 id="admin-password" className="type-h3 border-b border-secondary/40 pb-2">
+          Change password
+        </h2>
+        <div className="mt-4">
+          <AdminPasswordForm />
+        </div>
       </section>
 
       <section aria-labelledby="admin-env" className="mt-16">
@@ -61,9 +73,9 @@ export default async function AdminSettingsPage() {
           Coming next
         </h2>
         <ul className="mt-4 space-y-2 type-small text-ink-soft">
-          <li>Phase 2 — create, edit, archive members, hall of fame, achievements, activities.</li>
-          <li>Phase 3 — application statuses, notes, CSV export, admin-user management.</li>
-          <li>Phase 4 — password change, audit viewer, hardening and docs.</li>
+          <li>Phase 2 — content editing is live (revision-safe, audit-logged).</li>
+          <li>Phase 3 — applications, admin users and password change are live.</li>
+          <li>Phase 3c — audit viewer. Phase 4 — hardening, uploads and 2FA.</li>
         </ul>
       </section>
     </>

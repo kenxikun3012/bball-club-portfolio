@@ -1,10 +1,10 @@
 # Admin dashboard — development handover
 
-Status: **Phase 1 complete**. This document is the continuation guide for the remaining
-admin-site work (Phases 2–4), plus the current architecture, conventions and deployment
+Status: **Phase 2 complete, Phase 3a (applications) 3b (admin users, password change) and 3c (audit viewer) Phase 4a (security hardening) and Phase 4b (CI, e2e, accessibility), 4c (caching), 4e (uploads) and 4f (monitoring) complete**. This document is the continuation guide for the remaining
+admin-site work (Phases 3–4), plus the current architecture, conventions and deployment
 checks.
 
-Last updated: 2026-11-10 · Commit: `98e849f` (Phase 1)
+Last updated: 2026-11-10 · Phase 2 content editing
 
 ---
 
@@ -19,21 +19,27 @@ Last updated: 2026-11-10 · Commit: `98e849f` (Phase 1)
 - Join form → `POST /api/join` → validated with zod, rate limited (3/email + 10/IP per
   24h), stored in `applications`.
 
-### Admin (Phase 1 — read-only)
+### Admin (Phase 2 — content editing)
 
 - `/admin/login` — email + password, no public signup.
 - Protected area `/admin`: overview, members, hall of fame, achievements, activities,
-  applications (read-only lists), settings (account + env checks).
+  applications (read-only list), settings (account + env checks).
+- **Content editors** for members, hall of fame, achievements and activities:
+  schema-driven forms, add/remove/reorder rows, unsaved-changes guard, inline validation
+  summary, optimistic revision check with a 409 "reload latest" banner. `viewer` sees the
+  same forms disabled; `editor`/`owner` can save.
 - Auth: custom DB-backed sessions, scrypt password hashes, httpOnly cookie, middleware
   gate, server-side session validation, audit log, login throttling.
-- Tooling: `npm run db:seed`, `npm run admin:create`, `scripts/test-admin.mjs` (15 checks).
+- Tooling: `npm run db:seed`, `npm run admin:create`, `scripts/test-admin.mjs` (15 checks),
+  `scripts/test-admin-crud.mjs` (14 checks).
 
 ### Not built yet
 
-- No CRUD (create/edit/archive/delete) for any content.
 - No application status workflow, notes, CSV export.
 - No admin-user management, password change, audit viewer, 2FA, password reset email.
 - No image uploads (image URL fields are used instead).
+- Club-level content (hero, about, training, committee) is not editable in the admin UI;
+  `content/club.json` / the `club` document remain seed-managed.
 
 ---
 
@@ -56,6 +62,7 @@ npm run dev                       # http://localhost:3000 · /admin
 | `npm run db:seed` | seed content documents |
 | `npm run admin:create -- <email> [role]` | create or reset an admin account |
 | `node --env-file=.env.local scripts/test-admin.mjs` | auth + live-content tests (server must run) |
+| `node --env-file=.env.local scripts/test-admin-crud.mjs` | content editing tests (server must run) |
 | `node --env-file=.env.local scripts/test-join.mjs` | join API tests |
 | `node --env-file=.env.local scripts/test-mongo.mjs` | Atlas connectivity check |
 
@@ -92,6 +99,9 @@ app/
     join/route.ts
     admin/auth/login/route.ts
     admin/auth/logout/route.ts
+    admin/content/[doc]/route.ts   # GET snapshot · PATCH revision-safe write
+  components/
+    admin-content-editor.tsx       # schema-driven editor (client)
 middleware.ts             # edge gate for /admin + /api/admin
 ```
 
@@ -105,6 +115,9 @@ middleware.ts             # edge gate for /admin + /api/admin
 | `lib/auth.ts` | scrypt hash/verify, sessions, `getAdminSession`, `requireAdminPage`, login throttling |
 | `lib/audit.ts` | append-only audit entries |
 | `lib/admin-queries.ts` | admin read models (applications, audit) |
+| `lib/admin-schemas.ts` | strict zod schemas for each editable content document |
+| `lib/admin-fields.ts` | declarative field map consumed by the content editor |
+| `components/admin-content-editor.tsx` | generic editor + per-section wrappers |
 | `lib/http.ts` | client IP, same-origin, content-type, body-size helpers |
 | `middleware.ts` | redirects unauthenticated `/admin`, 401s `/api/admin` |
 
@@ -149,8 +162,8 @@ Every admin endpoint must follow the same pipeline:
 | `editor` | viewer + content CRUD (members, HoF, achievements, activities) |
 | `owner` | editor + admin-user management, settings, exports |
 
-Phase 1 only authenticates; **role enforcement must be added with the first write
-endpoints.**
+Phase 1 only authenticated; write endpoints now enforce roles: `viewer` gets `403`,
+`editor`/`owner` can save content.
 
 ### Design system (admin UI reuses the public tokens)
 
@@ -172,39 +185,153 @@ invalidated in the same transaction path.
 
 ## 5. Remaining work
 
-### Phase 2 — Content CRUD (next)
+### Phase 2 — Content CRUD ✅ done
 
-**Goal:** full CRUD for members, hall of famers, achievements and activities, live
-immediately, audit-logged, revision-safe.
+**Delivered:**
 
-Suggested design:
+- `GET /api/admin/content/[doc]` → `{ data, revision, updatedAt, updatedBy }` (any role).
+- `PATCH /api/admin/content/[doc]` body `{ data, expectedRevision }`:
+  same-origin → JSON → 512 KB cap → session → `owner`/`editor` check → strict zod
+  validation of the whole document → revision-checked update → changed-key audit →
+  `200 { revision }`. Stale revision returns `409 { revision }`; the editor shows a
+  "reload latest" banner. Missing documents are created at revision 0.
+- `lib/admin-schemas.ts`: strict schemas for all four documents. String caps, jersey
+  numbers 0–99, unique numbers per roster, unique retired jerseys, duplicate roster ids,
+  player role enum, `YYYY-MM-DD` event dates, and https-only image URLs. Unknown /
+  operator keys are rejected.
+- `lib/admin-fields.ts` + `components/admin-content-editor.tsx`: schema-driven editor with
+  collapsible row editors, add/remove/reorder, search-free compact forms, validation
+  issue list, unsaved-changes guard, save/discard, and read-only mode for `viewer`.
+- Admin pages for members, hall of fame, achievements and activities now load a snapshot
+  (`getContentSnapshot`) and render the editor.
+- `scripts/test-admin-crud.mjs`: 14 checks (role enforcement, validation, 409, audit,
+  live public update) and restores the original document.
 
-- **Generic content endpoint** (fastest, atomic):
-  - `GET /api/admin/content/[doc]` → `{ data, revision }`
-  - `PATCH /api/admin/content/[doc]` body `{ data, expectedRevision }` →
-    validate whole document with a zod schema → `content.updateOne({ _id, revision: expectedRevision }, { $set: { data, updatedAt, updatedBy }, $inc: { revision: 1 } })` → if `matchedCount === 0` return `409` with current revision → audit changed top-level keys → `200 { revision }`.
-  - Body cap for admin writes: 512 KB (members doc is large; the public form cap is 10 KB).
-- **Schemas** in `lib/admin-schemas.ts` (reuse entity types from `lib/content.ts`):
-  string length caps, jersey numbers 0–99, unique roster numbers, enum roles, URLs
-  (`https://…`) for image fields, awards string arrays, required fields.
-- **UI:** table + edit drawer/page per section.
-  - Members: roster tabs, search, create/edit/archive, featured toggle, filter metadata
-    (`monthlySessions`, `risingStar`, `joined`, `awards`), staff editor.
-  - Hall of Fame: retired jerseys and inductees, reorder.
-  - Achievements: summary stats + items.
-  - Activities: gallery + upcoming events.
-  - Unsaved-changes guard, inline field errors, 409 conflict banner ("someone else edited
-    this — reload").
-- **Delete policy:** prefer archive/soft-delete flags for players (keeps statistics and
-  history); hard delete only for typo rows, behind a typed confirmation. If archived
-  players must stay hidden, the public roster/filter code needs an `archived` filter.
-- **Concurrency:** always send/verify `expectedRevision`; never blind-overwrite.
-- **Audit:** `changes` = changed field names (never values/PII), plus `entityId`/revision.
-- **Role check:** writes require `owner` or `editor`; `viewer` gets `403`.
+**Deferred from the original sketch:** explicit archive/soft-delete flags, roster search
+and a separate edit drawer. Deleting a row removes it outright; add `archived` fields
+before using this for historical players. Club-level content (hero/about/training) is
+still seed-managed.
 
-Acceptance: create/edit/archive visible on the public site instantly; 409 on stale
-revision; audit entries written; validation rejects operator keys, bad URLs, duplicate
-jersey numbers; tests added.
+### Phase 3a — Applications workflow ✅ done
+
+- `PATCH /api/admin/applications/[id]` — `{ status }` or `{ addNote }` (owner/editor; viewer 403).
+  Statuses `new → reviewing → shortlisted → accepted → rejected` (any to any). Notes max 100,
+  1000 chars each, appended atomically. Audit `application.status` / `application.note` (no text).
+- `GET /api/admin/applications/export?status=&q=` — CSV (owner/editor), BOM, RFC 4180, formula
+  injection defused, `no-store`, max 5,000 rows, audit `application.export`.
+- `/admin/applications` — status chips with counts, search (name/email, literal match),
+  pagination (25), expandable detail panel. IP data is never exposed.
+- Code: `lib/application-schemas.ts`, `lib/application-queries.ts`, `lib/csv.ts`,
+  `components/admin-application-panel.tsx`. Tests: `scripts/test-admin-applications.mjs` (37 checks).
+- Still open in Phase 3: admin-user management, password change, audit viewer (3b/3c).
+
+### Phase 3b — Admin users and password change ✅ done
+
+- `POST /api/admin/auth/password` (any role): current + new password, throttled (5 wrong guesses /
+  15 min), revokes other sessions, audit `auth.password`. Rules: 8–200 chars, not the email, not
+  containing the email local part, different from the current password.
+- `GET/POST /api/admin/users`, `PATCH /api/admin/users/[id]` (owner only): create with a one-time
+  16-char temp password (`no-store`), change role, disable/enable, reset password. Role change,
+  disable and reset revoke the target's sessions. Self-changes are refused; the last active owner
+  is protected (apply, count, revert on zero). Audit `user.create/role/disable/enable/reset`.
+- Temp passwords set `mustChangePassword`: `getAdminSession()` returns null for such users (every
+  API 401s) and pages redirect to `/admin/change-password`. Only the password endpoint, that page
+  and logout opt in with `allowMustChange`.
+- UI: owner-only `/admin/users` + nav link; change-password form in Settings.
+- Tests: `scripts/test-admin-users.mjs` (60 checks) must run against an ISOLATED database:
+  `MONGODB_DB=bball_club_test npm start -- -p 3102`, then the script with the same env. It refuses
+  database names without "test".
+- Remaining: Phase 4.
+
+### Phase 3c — Audit viewer ✅ done
+
+- `/admin/audit` (owner only; others redirect to `/admin`): read-only table of `audit_logs`, 50 per
+  page, newest first. Filters: action (known-actions dropdown), actor email (literal, case-
+  insensitive), from/to dates (UTC, `to` inclusive). Bad input falls back to defaults.
+- `ipHash` / `userAgent` are never selected. Code: `lib/audit-queries.ts`; indexes
+  `action_created`, `actor_created` in `lib/mongodb.ts`.
+- Tests: `scripts/test-admin-audit.mjs` (22 checks, isolated test database like 3b).
+- Phase 3 is complete. Keep `AUDIT_ACTIONS` in `lib/audit-queries.ts` in sync when adding actions.
+
+### Phase 4a — Security hardening ✅ done
+
+- `middleware.ts` now runs on every page (static assets excluded): per-request nonce + strict CSP
+  (`script-src 'self' 'nonce-…' 'strict-dynamic'`, `frame-ancestors 'none'`, `object-src 'none'`,
+  `style-src` keeps `'unsafe-inline'`, `img-src` allows `https:`). Next reads the nonce from the request
+  header; `app/layout.tsx` passes it to the inline `js` class script. **Any new inline `<script>` must
+  take `nonce` from `headers().get("x-nonce")`** or the browser will block it. Pages must stay dynamic.
+- `next.config.ts`: HSTS (`max-age=31536000`, production only, no includeSubDomains/preload) and COOP.
+- `X-Robots-Tag: noindex, nofollow` on `/admin/*` and `/api/admin/*`; `app/robots.ts` hides `/admin`, `/api/`.
+- `lib/admin-limits.ts`: per-user limits via `auth_rate_limits` — 60 writes / 5 min and 10 exports /
+  15 min (429 + `Retry-After`), applied after the role check on content, applications, users and
+  password routes. Fails open if the limiter's database call fails.
+- Account lockout: not added; login throttling (5/email, 20/IP per 15 min) already covers guessing.
+- Tests: `scripts/test-admin-security.mjs` (19 checks; production build + isolated test database).
+  Verified in the browser: public site and login page load with no CSP violations.
+- Remaining Phase 4: CI + e2e + accessibility (4b), caching (4c), TOTP 2FA (4d), uploads (4e),
+  email reset / monitoring / backups (4f).
+
+### Phase 4b — CI, browser tests, accessibility ✅ done
+
+- `npm run test:integration` (`scripts/run-integration.mjs`): seeds an isolated test database, starts a
+  production server on 3102 and runs all six suites. Needs `npm run build` first and `MONGODB_URI`
+  (from `.env.local` or the environment). The database name is forced to one containing "test".
+- `npm run test:e2e` (Playwright, Chromium, `tests/e2e/`, config `playwright.config.ts`): production
+  server on 3103 + isolated test database; seeds ephemeral `e2e.*` users/application and cleans up
+  (restores seeded content) afterwards. Specs: public site (+CSP/console errors), login, content
+  editing, applications, users, and axe accessibility scans (home, login, all admin pages).
+  First time on a machine: `npx playwright install chromium`.
+- `.github/workflows/ci.yml`: `checks` (typecheck, design check, build), `integration` and `e2e`
+  (each with a throwaway `mongo:7` service container, no secrets). **Not yet run on GitHub.**
+- Accessibility fixes: logo link name now contains its visible text; the two carousels are keyboard-
+  focusable named groups; `--color-muted` darkened from #8a7b63 (3.69:1 on cream-100) to #6e624f
+  (5.34:1 on cream-100, 4.73:1 on cream-200) so muted text meets WCAG AA. The axe scans now enforce
+  serious/critical violations **including contrast** and pass on all scanned pages. Note: the orange
+  `accent-soft` (#e0703a, 2.87:1) is not used for text anywhere axe scanned; do not use it for text.
+- `npm audit` reports 1 high issue in `zod` < 4.6.6 (memory exhaustion on huge collections); fixing
+  means a zod 3→4 major upgrade. Request bodies are size-capped, which limits exposure.
+- Remaining Phase 4: only TOTP 2FA (4d) and email password reset, both deliberately skipped for now.
+
+### Phase 4c — Content caching ✅ done
+
+- Public content reads use `unstable_cache` (`lib/content-db.ts`), tagged `content:<id>`, 5-minute
+  safety expiry. A successful content save calls `revalidateTag(tag, { expire: 0 })`, so admin edits
+  are live on the next request. Failures and missing documents throw and are never cached, so the
+  JSON seed fallback cannot get stuck in the cache.
+- The admin editor reads uncached (revision-checked). **Edits made outside the admin** (`npm run
+  db:seed`, Atlas UI, the club document which has no editor) can take up to 5 minutes to appear.
+- Tests: `test-admin-crud` proves the cache is active (direct DB edit not served) and that a save
+  invalidates it. Pages stay dynamic so the CSP nonce keeps working.
+
+### Phase 4e — Image uploads (ImageKit) ✅ done
+
+- `POST /api/admin/uploads` (owner/editor): multipart `file`, max 4 MB (Vercel bodies cap at ~4.5 MB),
+  JPEG/PNG/WebP detected from the file's bytes (SVG/GIF/renamed files rejected), name sanitised, 20
+  uploads / 15 min / user, audit `upload.image` (type + size only). The server uploads to ImageKit
+  with the private key (`lib/imagekit.ts`, plain `fetch`, no SDK) into `/club` and returns the
+  https URL, which must sit under `IMAGEKIT_URL_ENDPOINT`. Upstream errors become a generic 502.
+- Env: `IMAGEKIT_PRIVATE_KEY`, `IMAGEKIT_URL_ENDPOINT` (see `.env.example`). Without them the API
+  returns 503 and the editor hides the Upload button; pasting URLs still works. Settings shows status.
+- Editor: image fields on Members / Hall of Fame / Activities get an Upload button that fills the
+  URL field (still needs Save). Tests use `scripts/mock-imagekit.mjs` (21 API checks + 3 browser tests).
+- **To do with real keys:** add both variables locally and on Vercel, then upload one real image and
+  save it; confirm it renders on the public site (CSP allows `https:` images).
+
+### Phase 4f — Monitoring and operations ✅ done (code part)
+
+- `GET /api/health`: public, no-store, pings MongoDB; `{ ok, db }` with 200 or 503, no secrets. Point
+  an uptime monitor (e.g. UptimeRobot, Better Stack) at `https://<domain>/api/health`.
+- `lib/log.ts`: all server errors/warnings are one JSON line (`level`, `scope`, `message`, `error`,
+  `time`) searchable in Vercel Logs; connection-string credentials are redacted. Use `logError` /
+  `logWarn`, not `console.*`. No Sentry; add it later if needed (mind the CSP).
+- **Backups (manual, in Atlas — not done by code):**
+  1. Atlas > Database > Backup: enable Cloud Backup if your tier allows it (M10+). The free M0 tier
+     has **no** automated snapshots; use a scheduled `mongodump` instead or upgrade before launch.
+  2. Keep at least 7 daily snapshots; note the restore window.
+  3. Do one test restore into a scratch cluster and check `content`, `admin_users`, `applications`.
+  4. Network Access `0.0.0.0/0` is required for Vercel; keep strong DB credentials and rotate them
+     (and `IP_HASH_SALT`, `IMAGEKIT_PRIVATE_KEY`) if they ever leak. Rotating the salt resets throttles.
+- Email password reset: intentionally skipped (owners reset on the Users page). TOTP 2FA: skipped.
 
 ### Phase 3 — Applications, admins, audit UI
 
@@ -242,18 +369,18 @@ Existing scripts:
 - `scripts/test-admin.mjs` — 15 checks: redirects, CSRF, login, cookie, DB session,
   authenticated pages, middleware 401, logout revocation, rate limit, live DB→page content.
   It creates/removes an ephemeral admin and cleans rate-limit entries.
+- `scripts/test-admin-crud.mjs` — 14 checks: editor/viewer login, read snapshot,
+  unauthenticated 401, viewer 403, unknown doc 404, operator-key/duplicate-jersey/bad-URL
+  422s, valid save, live public update, stale-revision 409, value-free audit entry. Restores
+  the original `members` document and removes its users/audit rows.
 - `scripts/test-join.mjs`, `scripts/test-mongo.mjs` as before.
 
-Extend for Phase 2/3 (suggested `scripts/test-admin-crud.mjs`):
+Still recommended (Phase 3/4):
 
-- Unauthenticated write → `401`; `viewer` write → `403`.
-- Invalid payloads: unknown keys (`$where`, dotted paths), oversized body, bad enums,
-  duplicate jersey number, bad image URL → `422`.
-- Revision conflict → `409`, valid next revision succeeds.
-- Audit entry written per mutation; changes contain no PII values.
 - Application status transitions + notes; CSV export escaping and `no-store`.
 - Session expiry (set `expiresAt` in the past in Mongo → next request redirects/401).
 - Password change revokes other sessions.
+- Oversized content body → `413` (the cap is 512 KB; the UI never approaches it).
 
 ---
 
@@ -270,6 +397,7 @@ Extend for Phase 2/3 (suggested `scripts/test-admin-crud.mjs`):
    - `/` renders (dynamic, reads Mongo).
    - `/admin/login` loads; login succeeds; `/admin` 200; logout redirects.
    - `/admin` and `/api/admin/*` return 401/redirect without a cookie.
+   - `/admin/members` edit saves, the public page updates, and a stale revision returns 409.
    - Join form returns `201` and the row appears in `applications`.
 6. Backups: enable Atlas snapshots; keep `content/*.json` in sync via `db:seed` only when
    intentional (it **overwrites** content docs).
@@ -289,7 +417,10 @@ Known deployment constraints:
 
 - Password change UI is missing; reset via `npm run admin:create` (updates the same user).
   The current owner temp password was shared in chat — reset it before production.
-- Role permissions are defined but **not enforced** for writes yet (there are no writes).
+- Role enforcement is live for content writes (`viewer` → 403); application/admin-user
+  endpoints in Phase 3 must repeat the same check.
+- Content editing saves the whole document. Deleting a row is permanent (no archive flag);
+  add `archived` fields before removing historical players/staff.
 - Content fallback to JSON seeds keeps the public site up if Mongo is unreachable, but it
   can mask configuration errors (warning is logged).
 - Sessions: 8h idle / 7d absolute, cookie fixed at 7d; no rotation on privilege change yet
@@ -308,17 +439,22 @@ Known deployment constraints:
 
 ```
 middleware.ts
-lib/auth.ts            scrypt, sessions, guards, login throttling
+lib/auth.ts            scrypt, sessions, guards, login throttling, canEditContent
 lib/audit.ts           audit writes
 lib/http.ts            request guards
-lib/content-db.ts      Mongo content reads + fallback
+lib/content-db.ts      Mongo content reads, snapshots + fallback
 lib/admin-queries.ts   applications/audit read models
+lib/admin-schemas.ts   strict zod schemas for content writes
+lib/admin-fields.ts    field map for the content editor
 lib/content.ts         types + helpers
-app/admin/…            login + protected pages
+components/admin-content-editor.tsx  schema-driven editor (client)
+app/admin/…            login + protected pages (content editors)
 app/api/admin/auth/…   login/logout
+app/api/admin/content/[doc]/route.ts  content GET + revision-safe PATCH
 scripts/seed-content.mjs
 scripts/create-admin.mjs
 scripts/test-admin.mjs
+scripts/test-admin-crud.mjs
 ```
 
 Public components receive content via props from `app/(site)/page.tsx` — no component

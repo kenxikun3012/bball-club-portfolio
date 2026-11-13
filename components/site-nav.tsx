@@ -46,8 +46,8 @@ export function SiteNav({ club }: { club: Club }) {
         <a
           href="#top"
           className="group flex items-center gap-4"
-          aria-label="University Basketball Club — back to top"
         >
+          <span className="sr-only">Back to top: </span>
           <span className="flex h-10 w-10 items-center justify-center rounded-full border border-ink/15 bg-ink font-display text-cream-100 transition-colors group-hover:bg-secondary group-hover:text-ink">
             U
           </span>

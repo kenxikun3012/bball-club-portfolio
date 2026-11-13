@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { getDb } from "@/lib/mongodb";
 import { fieldErrors, joinRequestSchema } from "@/lib/validation";
 import { checkJoinRateLimits } from "@/lib/rate-limit";
+import { logError } from "@/lib/log";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -117,7 +118,7 @@ export async function POST(request: Request) {
       { status: 201 },
     );
   } catch (error) {
-    console.error("[api/join] failed to store application", error);
+    logError("api/join", "failed to store application", error);
     return NextResponse.json(
       {
         ok: false,

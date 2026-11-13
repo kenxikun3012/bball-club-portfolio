@@ -12,6 +12,8 @@ const NAV = [
   { href: "/admin/achievements", label: "Achievements" },
   { href: "/admin/activities", label: "Activities" },
   { href: "/admin/applications", label: "Applications" },
+  { href: "/admin/users", label: "Users", ownerOnly: true },
+  { href: "/admin/audit", label: "Audit log", ownerOnly: true },
   { href: "/admin/settings", label: "Settings" },
 ];
 
@@ -56,7 +58,7 @@ export function AdminShell({
 
         <nav aria-label="Admin" className="mt-4 flex-1 px-4">
           <ul className="space-y-2">
-            {NAV.map((item) => (
+            {NAV.filter((item) => !item.ownerOnly || user.role === "owner").map((item) => (
               <li key={item.href}>
                 <Link
                   href={item.href}

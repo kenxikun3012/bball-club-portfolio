@@ -139,15 +139,11 @@ try {
   const beforeHtml = await before.text();
   check("public site renders", before.status === 200);
 
-  const content = db.collection("content");
-  const clubDoc = await content.findOne({ _id: "club" });
+  // Public content is cached with tag-based invalidation (see test-admin-crud for the
+  // save → instant-update path), so here we only verify it is rendered from MongoDB.
+  const clubDoc = await db.collection("content").findOne({ _id: "club" });
   if (clubDoc) {
-    const liveTag = `Live DB tagline ${stamp}`;
-    await content.updateOne({ _id: "club" }, { $set: { "data.tagline": liveTag } });
-    const after = await fetch(`${BASE}/`);
-    const afterHtml = await after.text();
-    check("public site reflects DB changes without rebuild", afterHtml.includes(liveTag));
-    await content.updateOne({ _id: "club" }, { $set: { "data.tagline": clubDoc.data.tagline } });
+    check("public site renders club content from MongoDB", beforeHtml.includes(clubDoc.data.name));
   } else {
     check("content seeded in MongoDB", false, "club document missing — run npm run db:seed");
   }

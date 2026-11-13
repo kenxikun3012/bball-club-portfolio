@@ -248,8 +248,9 @@ Change rate limits in `lib/rate-limit.ts` (`EMAIL_LIMIT`, `IP_LIMIT`, `WINDOW_MS
 
 ## Admin dashboard
 
-**Phase 1 (done):** authentication, session security, seed tooling, admin shell, overview
-and read-only views of members, hall of fame, achievements, activities and applications.
+**Phase 2 (done):** authentication, session security, seed tooling, admin shell, overview,
+read-only applications, and full content editing for members, hall of fame, achievements and
+activities — revision-safe, role-gated and audit-logged.
 
 ### Auth model
 
@@ -265,8 +266,8 @@ and read-only views of members, hall of fame, achievements, activities and appli
   against MongoDB, so a forged cookie cannot grant access.
 - **Login hardening:** same-origin check, JSON-only, 4 KB body cap, generic errors,
   per-email (5) + per-IP (20) attempts per 15 minutes.
-- **Audit trail:** `audit_logs` records logins/logouts (and future content changes) with
-  hashed IP and truncated user agent.
+- **Audit trail:** `audit_logs` records logins/logouts and content changes with hashed IP,
+  truncated user agent, and changed field names only (never values).
 
 ### Accounts
 
@@ -282,26 +283,33 @@ A temporary password is printed once; reset it any time with `admin:create`.
 `content/*.json` are seed files. `npm run db:seed` writes them into the `content`
 collection (`club`, `members`, `hallOfFame`, `achievements`, `activities` documents, each
 with `revision` and `updatedAt`). The public site reads from MongoDB on every request
-(pages are dynamic), so Phase 2 edits will publish immediately without a redeploy. If the
+(pages are dynamic), so admin edits publish immediately without a redeploy. If the
 database is unreachable the public site falls back to the JSON seed files.
+
+Admin writes go through `PATCH /api/admin/content/[doc]` and require the `owner` or
+`editor` role. Each save sends the current `revision`; a stale revision returns `409` and
+the editor offers to reload the latest copy. Writes validate the whole document with a
+strict zod schema (unknown keys, bad URLs and duplicate jersey numbers are rejected) and
+write a value-free audit entry.
 
 ### Routes
 
 | Path | Purpose |
 | --- | --- |
 | `/admin` | overview: counts, recent applications, recent audit entries |
-| `/admin/members` · `/admin/hall-of-fame` · `/admin/achievements` · `/admin/activities` | read-only lists (CRUD in Phase 2) |
+| `/admin/members` · `/admin/hall-of-fame` · `/admin/achievements` · `/admin/activities` | content editors (owner/editor; read-only for viewer) |
 | `/admin/applications` | read-only applications list (workflow + CSV in Phase 3) |
 | `/admin/settings` | account info + environment checks |
 | `/api/admin/auth/login` · `/logout` | session endpoints |
+| `/api/admin/content/[doc]` | `GET` snapshot + `PATCH` revision-safe content write |
 
 ### Phases
 
 | Phase | Scope | Status |
 | --- | --- | --- |
 | 1 | sessions/auth, seed + admin CLIs, admin shell, read-only views | ✅ done |
-| 2 | CRUD for members, hall of fame, achievements, activities + live revalidation | next |
-| 3 | application statuses, notes, CSV export, admin-user management | planned |
+| 2 | CRUD for members, hall of fame, achievements, activities + live updates | ✅ done |
+| 3 | application statuses, notes, CSV export, admin-user management | next |
 | 4 | password change, audit viewer, hardening, docs | planned |
 
 ### Testing
@@ -309,13 +317,16 @@ database is unreachable the public site falls back to the JSON seed files.
 With the server running (`npm start -- -p 3100`):
 
 ```bash
-node --env-file=.env.local scripts/test-admin.mjs   # 15 auth/content checks
+node --env-file=.env.local scripts/test-admin.mjs      # 15 auth/content checks
+node --env-file=.env.local scripts/test-admin-crud.mjs # 14 content CRUD checks
 ```
 
-Covers redirects, CSRF rejection, wrong/valid login, httpOnly cookie, DB session storage,
-authenticated pages, middleware 401s, logout revocation, login rate limiting, and live
-DB-to-page content updates. It creates and removes an ephemeral admin, so it is safe to
-re-run.
+`test-admin.mjs` covers redirects, CSRF rejection, wrong/valid login, httpOnly cookie, DB
+session storage, authenticated pages, middleware 401s, logout revocation, login rate
+limiting, and live DB-to-page content updates. `test-admin-crud.mjs` covers role
+enforcement, unknown keys, duplicate jersey numbers, image URL validation, revision
+conflicts, audit entries and live public updates. Both create and remove ephemeral admins
+(and the CRUD test restores the original content document), so they are safe to re-run.
 
 ---
 
@@ -392,6 +403,8 @@ components/
 app/api/join/route.ts # POST endpoint: validation, rate limiting, MongoDB insert
 app/api/admin/auth/login/route.ts  # admin session login
 app/api/admin/auth/logout/route.ts # admin session revoke
+app/api/admin/content/[doc]/route.ts # content GET + revision-safe PATCH
+components/admin-content-editor.tsx  # schema-driven content editor (client)
 app/admin/            # admin dashboard (login + protected route group)
 middleware.ts         # edge gate for /admin and /api/admin (cookie presence)
 content/              # ← seed data (JSON) — runtime content lives in MongoDB
@@ -404,6 +417,8 @@ lib/
   auth.ts             # scrypt passwords, DB sessions, guards, login throttling
   audit.ts            # append-only audit log
   admin-queries.ts    # admin read models (applications, audit)
+  admin-schemas.ts    # strict zod schemas for content writes
+  admin-fields.ts     # declarative field map for the content editor
   http.ts             # client IP, origin + content-type guards
   env.ts              # lazy env access
   form-options.ts     # shared position/year options
@@ -413,6 +428,7 @@ scripts/
   create-admin.mjs    # create/update admin accounts
   test-join.mjs       # join API security/validation tests
   test-admin.mjs      # admin auth + live-content tests
+  test-admin-crud.mjs # content editing, validation, revision + audit tests
   test-mongo.mjs      # MongoDB connectivity check
 public/photos/        # ← drop real photos here
 theme-preview/        # design mockups generated during the theme selection

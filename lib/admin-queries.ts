@@ -1,4 +1,5 @@
 import { getDb } from "@/lib/mongodb";
+import { logError } from "@/lib/log";
 
 export interface ApplicationRow {
   _id: unknown;
@@ -31,7 +32,7 @@ export async function getApplicationStats(): Promise<{ total: number; pending: n
     ]);
     return { total, pending };
   } catch (error) {
-    console.error("[admin] application stats failed", error);
+    logError("admin", "application stats failed", error);
     return { total: 0, pending: 0 };
   }
 }
@@ -46,7 +47,7 @@ export async function getApplications(limit = 50): Promise<ApplicationRow[]> {
       .limit(limit)
       .toArray()) as unknown as ApplicationRow[];
   } catch (error) {
-    console.error("[admin] applications query failed", error);
+    logError("admin", "applications query failed", error);
     return [];
   }
 }
@@ -61,7 +62,7 @@ export async function getRecentAudit(limit = 6): Promise<AuditRow[]> {
       .limit(limit)
       .toArray()) as unknown as AuditRow[];
   } catch (error) {
-    console.error("[admin] audit query failed", error);
+    logError("admin", "audit query failed", error);
     return [];
   }
 }
