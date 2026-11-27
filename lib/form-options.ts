@@ -8,11 +8,14 @@ export const POSITIONS = [
   "Not sure yet",
 ] as const;
 
+/** YTU's own year labels — the same ones the roster uses. */
 export const YEARS = [
-  "Fresher",
+  "Year I",
   "Year II",
   "Year III",
-  "Senior",
+  "Year IV",
+  "Year V",
+  "Year VI",
   "Graduate",
 ] as const;
 

@@ -12,3 +12,7 @@ next-env.d.ts
 # Playwright
 test-results
 playwright-report
+
+# Local tooling (preview config, Impeccable critique/cache)
+.claude/
+.impeccable/

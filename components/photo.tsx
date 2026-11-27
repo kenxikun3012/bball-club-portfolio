@@ -1,7 +1,9 @@
 import { cn } from "@/lib/cn";
-import { initials } from "@/lib/content";
+import { initials, splitNickname } from "@/lib/content";
 
-function CourtArt({ variant = 0, dark = false }: { variant?: number; dark?: boolean }) {
+type Tone = "light" | "dark" | "flame";
+
+function CourtArt({ variant = 0, tone = "light" }: { variant?: number; tone?: Tone }) {
   const shifts = [
     { cx: 300, cy: 210, r: 150, rotate: 0 },
     { cx: 140, cy: 260, r: 170, rotate: 25 },
@@ -15,7 +17,7 @@ function CourtArt({ variant = 0, dark = false }: { variant?: number; dark?: bool
       preserveAspectRatio="xMidYMid slice"
       className={cn(
         "absolute inset-0 h-full w-full",
-        dark ? "text-secondary/25" : "text-ink/20",
+        tone === "dark" ? "text-secondary/25" : tone === "flame" ? "text-cream-50/35" : "text-ink/20",
       )}
       aria-hidden="true"
     >
@@ -63,10 +65,10 @@ interface PhotoProps {
   label?: string;
   /** Hide the placeholder caption (for small thumbnails). */
   showLabel?: boolean;
-  /** Shows big initials on roster placeholders. */
+  /** Big monogram or nickname on roster placeholders. */
   init?: string;
-  /** Placeholder treatment: warm paper or dark court. */
-  tone?: "light" | "dark";
+  /** Placeholder treatment: warm paper, dark court, or flame (game-day energy). */
+  tone?: Tone;
   className?: string;
   variant?: number;
   priority?: boolean;
@@ -88,6 +90,7 @@ export function Photo({
   priority = false,
 }: PhotoProps) {
   const dark = tone === "dark";
+  const flame = tone === "flame";
 
   if (src) {
     return (
@@ -106,7 +109,7 @@ export function Photo({
     <div
       className={cn(
         "relative overflow-hidden",
-        dark ? "bg-[#1a140d]" : "bg-cream-200",
+        dark ? "bg-[#1a140d]" : flame ? "bg-accent" : "bg-cream-200",
         className,
       )}
     >
@@ -115,15 +118,19 @@ export function Photo({
           "absolute inset-0",
           dark
             ? "bg-[radial-gradient(120%_90%_at_80%_10%,#332817_0%,#1f1810_70%,#14100b_100%)]"
-            : "bg-[radial-gradient(120%_90%_at_80%_10%,#f7e7c6_0%,#e8d7b6_70%,#dcc79f_100%)]",
+            : flame
+              ? "bg-[radial-gradient(120%_90%_at_80%_100%,#eec166_0%,#e0703a_45%,#9a3412_100%)]"
+              : "bg-[radial-gradient(120%_90%_at_80%_10%,#f7e7c6_0%,#e8d7b6_70%,#dcc79f_100%)]",
         )}
       />
-      <CourtArt variant={variant} dark={dark} />
+      <CourtArt variant={variant} tone={tone} />
       <div
         className={cn(
           "absolute inset-0",
           dark
             ? "bg-gradient-to-t from-ink/70 via-transparent to-transparent"
+            : flame
+              ? "bg-gradient-to-t from-[#7c2d12]/60 via-transparent to-transparent"
             : "bg-gradient-to-t from-ink/[0.13] via-transparent to-cream-50/30",
         )}
       />
@@ -131,8 +138,9 @@ export function Photo({
         <span
           aria-hidden="true"
           className={cn(
-            "absolute inset-0 flex items-center justify-center type-stat",
-            dark ? "text-secondary/20" : "text-ink/25",
+            "absolute inset-0 flex items-center justify-center px-6 text-center text-balance font-display italic",
+            init.length > 4 ? "type-h3" : "type-stat",
+            dark ? "text-secondary/30" : "text-ink/35",
           )}
         >
           {init}
@@ -142,9 +150,9 @@ export function Photo({
         <span
           className={cn(
             "absolute bottom-2 left-2 rounded-full px-2 py-2 type-label backdrop-blur-sm",
-            dark
-              ? "border border-secondary/40 bg-ink/70 text-cream-200/70"
-              : "border border-secondary/50 bg-cream-50/85 text-ink/55",
+            dark || flame
+              ? "border border-secondary/40 bg-ink/70 text-cream-200"
+              : "border border-secondary/50 bg-cream-50/85 text-ink-soft",
           )}
         >
           {label ?? "Photo placeholder"}
@@ -169,16 +177,19 @@ export function MemberPhoto({
   variant?: number;
   src?: string | null;
   showLabel?: boolean;
-  tone?: "light" | "dark";
+  tone?: Tone;
 }) {
+  // Nicknames are what teammates actually call each other — and unlike two-letter
+  // initials they never collide ("KZ" was two different players).
+  const { name: realName, nickname } = splitNickname(name);
   return (
     <Photo
       src={src}
-      init={initials(name)}
+      init={nickname ?? initials(realName)}
       label={label ?? name}
       showLabel={showLabel}
       tone={tone}
-      alt={`Portrait of ${name}`}
+      alt={`Portrait of ${realName}`}
       variant={variant}
       className={className}
     />

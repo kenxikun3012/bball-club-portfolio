@@ -38,6 +38,8 @@ export function AdminShell({
     }
   }
 
+  const items = NAV.filter((item) => !item.ownerOnly || user.role === "owner");
+
   const isActive = (href: string) =>
     href === "/admin" ? pathname === "/admin" : pathname.startsWith(href);
 
@@ -58,7 +60,7 @@ export function AdminShell({
 
         <nav aria-label="Admin" className="mt-4 flex-1 px-4">
           <ul className="space-y-2">
-            {NAV.filter((item) => !item.ownerOnly || user.role === "owner").map((item) => (
+            {items.map((item) => (
               <li key={item.href}>
                 <Link
                   href={item.href}
@@ -100,11 +102,34 @@ export function AdminShell({
             type="button"
             onClick={signOut}
             disabled={signingOut}
-            className="type-label text-muted transition-colors hover:text-accent"
+            className="py-2 type-label text-muted transition-colors hover:text-accent disabled:opacity-60"
           >
-            Sign out
+            {signingOut ? "Signing out…" : "Sign out"}
           </button>
         </header>
+        <nav
+          aria-label="Admin sections"
+          className="overflow-x-auto border-b border-ink/10 bg-cream-200/40 md:hidden"
+        >
+          <ul className="flex w-max gap-2 px-4 py-2">
+            {items.map((item) => (
+              <li key={item.href}>
+                <Link
+                  href={item.href}
+                  aria-current={isActive(item.href) ? "page" : undefined}
+                  className={cn(
+                    "flex items-center whitespace-nowrap rounded-sm px-4 py-2 type-small font-medium transition-colors",
+                    isActive(item.href)
+                      ? "bg-ink text-cream-100"
+                      : "text-ink-soft hover:bg-cream-100",
+                  )}
+                >
+                  {item.label}
+                </Link>
+              </li>
+            ))}
+          </ul>
+        </nav>
 
         <div className="mx-auto max-w-[1100px] px-6 py-8 md:px-10 md:py-12">{children}</div>
       </div>

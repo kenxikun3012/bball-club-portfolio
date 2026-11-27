@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import { headers } from "next/headers";
-import { Fraunces, Manrope } from "next/font/google";
+import { Fraunces, Manrope, Noto_Sans_Myanmar } from "next/font/google";
 import "./globals.css";
 
 const fraunces = Fraunces({
@@ -13,6 +13,15 @@ const manrope = Manrope({
   subsets: ["latin"],
   variable: "--font-manrope",
   display: "swap",
+});
+
+// Burmese secondary labels. Not preloaded: only a few short lines use it.
+const myanmar = Noto_Sans_Myanmar({
+  subsets: ["myanmar"],
+  weight: ["400", "500"],
+  variable: "--font-myanmar",
+  display: "swap",
+  preload: false,
 });
 
 export const metadata: Metadata = {
@@ -33,7 +42,7 @@ export default async function RootLayout({
   return (
     <html
       lang="en"
-      className={`${fraunces.variable} ${manrope.variable}`}
+      className={`${fraunces.variable} ${manrope.variable} ${myanmar.variable}`}
       suppressHydrationWarning
     >
       <body>

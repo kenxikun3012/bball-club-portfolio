@@ -54,7 +54,7 @@ export function AdminLoginForm({ next }: { next: string }) {
           required
           autoComplete="username"
           autoFocus
-          className="w-full rounded-sm border border-ink/15 bg-cream-50 px-4 py-4 type-small text-ink focus:border-accent focus:outline-none focus:ring-1 focus:ring-accent/30"
+          className="w-full rounded-sm border border-ink/15 bg-cream-50 px-4 py-4 type-small text-ink focus:border-accent focus:outline-none focus:ring-2 focus:ring-accent/50"
         />
       </div>
       <div>
@@ -67,12 +67,12 @@ export function AdminLoginForm({ next }: { next: string }) {
           type="password"
           required
           autoComplete="current-password"
-          className="w-full rounded-sm border border-ink/15 bg-cream-50 px-4 py-4 type-small text-ink focus:border-accent focus:outline-none focus:ring-1 focus:ring-accent/30"
+          className="w-full rounded-sm border border-ink/15 bg-cream-50 px-4 py-4 type-small text-ink focus:border-accent focus:outline-none focus:ring-2 focus:ring-accent/50"
         />
       </div>
 
       {error ? (
-        <p role="alert" className="border border-accent/30 bg-accent-wash px-4 py-2 type-small text-accent">
+        <p role="alert" className="border border-accent/50 bg-accent-wash px-4 py-2 type-small text-ink">
           {error}
         </p>
       ) : null}

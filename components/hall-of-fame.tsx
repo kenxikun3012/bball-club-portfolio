@@ -4,6 +4,9 @@ import { HallOfFameCarousel } from "@/components/hall-of-fame-carousel";
 import type { HallOfFame as HallOfFameData } from "@/lib/content";
 
 export function HallOfFame({ hallOfFame }: { hallOfFame: HallOfFameData }) {
+  const empty =
+    hallOfFame.retiredJerseys.length === 0 && hallOfFame.inductees.length === 0;
+
   return (
     <section
       id="hall-of-fame"
@@ -30,23 +33,21 @@ export function HallOfFame({ hallOfFame }: { hallOfFame: HallOfFameData }) {
           <SectionHeading
             id="hall-of-fame-title"
             tone="dark"
-            index="03"
-            eyebrow="Hall of Fame"
-            title={
-              <>
-                Forever on
-                <br className="hidden sm:block" /> the wall.
-              </>
+            title="Forever on the wall."
+            intro={
+              empty
+                ? "The wall is empty — for now. The first names go up when they earn it."
+                : hallOfFame.intro
             }
-            intro={hallOfFame.intro}
           />
         </Reveal>
 
+        {hallOfFame.retiredJerseys.length > 0 ? (
         <Reveal delay={80}>
           <div className="mt-16">
             <div className="flex items-baseline justify-between gap-8 border-b border-secondary/25 pb-4">
               <h3 className="type-label text-secondary">Retired jerseys</h3>
-              <p className="type-label text-cream-300/60">
+              <p className="type-label text-cream-300/80">
                 {hallOfFame.retiredJerseys.length} numbers raised
               </p>
             </div>
@@ -58,13 +59,14 @@ export function HallOfFame({ hallOfFame }: { hallOfFame: HallOfFameData }) {
                 >
                   <p className="type-display text-secondary">{jersey.number}</p>
                   <p className="mt-4 type-label text-cream-100">{jersey.name}</p>
-                  <p className="mt-2 type-label text-cream-300/60">{jersey.years}</p>
-                  <p className="mt-4 type-small text-cream-300/70">{jersey.note}</p>
+                  <p className="mt-2 type-label text-cream-300/80">{jersey.years}</p>
+                  <p className="mt-4 type-small text-cream-300/80">{jersey.note}</p>
                 </li>
               ))}
             </ul>
           </div>
         </Reveal>
+        ) : null}
 
         <Reveal delay={120}>
           <HallOfFameCarousel inductees={hallOfFame.inductees} />

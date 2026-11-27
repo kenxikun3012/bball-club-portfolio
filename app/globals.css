@@ -32,6 +32,8 @@
   --font-sans: var(--font-manrope), ui-sans-serif, system-ui, -apple-system,
     "Segoe UI", sans-serif;
 
+  --font-myanmar-stack: var(--font-myanmar), "Myanmar Text", "Padauk", sans-serif;
+
   --shadow-editorial: 0 24px 60px -32px rgb(23 20 15 / 0.45);
 }
 
@@ -39,6 +41,38 @@
   html {
     scroll-behavior: smooth;
     -webkit-text-size-adjust: 100%;
+    scrollbar-color: var(--color-cream-400) var(--color-cream-100);
+    accent-color: var(--color-accent);
+  }
+
+  input,
+  textarea {
+    caret-color: var(--color-accent);
+  }
+
+  p,
+  li,
+  blockquote,
+  dd {
+    text-wrap: pretty;
+  }
+
+  /* Burmese runs need their own face and a taller line for stacked vowel marks. */
+  :lang(my) {
+    font-family: var(--font-myanmar-stack);
+    line-height: 1.9;
+    letter-spacing: 0;
+    text-transform: none;
+  }
+
+  /* Native disclosure triangles are replaced by the authored chevron. */
+  summary {
+    list-style: none;
+    cursor: pointer;
+  }
+
+  summary::-webkit-details-marker {
+    display: none;
   }
 
   body {
@@ -46,7 +80,6 @@
     background-image:
       radial-gradient(120% 80% at 100% 0%, #f9f4e9 0%, transparent 55%),
       radial-gradient(90% 60% at 0% 100%, #f3ecdd 0%, transparent 60%);
-    background-attachment: fixed;
   }
 
   ::selection {
@@ -184,12 +217,138 @@
     }
   }
 
+  /* Join form — sending and result motion. */
+  .spinner {
+    width: 1rem;
+    height: 1rem;
+    border-radius: 9999px;
+    border: 2px solid currentColor;
+    border-right-color: transparent;
+    animation: spinner-turn 0.7s linear infinite;
+  }
+
+  /* Indeterminate bar that runs along the top of the form card while sending. */
+  .sending-bar {
+    position: relative;
+    overflow: hidden;
+    height: 2px;
+    background: color-mix(in srgb, var(--color-secondary) 35%, transparent);
+  }
+
+  .sending-bar::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    width: 40%;
+    background: var(--color-accent);
+    animation: sending-slide 1.1s cubic-bezier(0.65, 0, 0.35, 1) infinite;
+  }
+
+  .rise-in {
+    animation: rise-in 0.5s cubic-bezier(0.22, 1, 0.36, 1) both;
+    animation-delay: var(--rise-delay, 0ms);
+  }
+
+  .check-ring {
+    stroke-dasharray: 126;
+    stroke-dashoffset: 126;
+    animation: draw 0.6s cubic-bezier(0.65, 0, 0.35, 1) 0.1s forwards;
+  }
+
+  .check-mark {
+    stroke-dasharray: 30;
+    stroke-dashoffset: 30;
+    animation: draw 0.35s cubic-bezier(0.65, 0, 0.35, 1) 0.6s forwards;
+  }
+
+  .nudge {
+    animation: nudge 0.4s cubic-bezier(0.36, 0.07, 0.19, 0.97) both;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .spinner {
+      animation-duration: 2s;
+    }
+
+    .sending-bar::after {
+      animation: none;
+      width: 100%;
+      opacity: 0.6;
+    }
+
+    .rise-in,
+    .nudge {
+      animation: none;
+    }
+
+    .check-ring,
+    .check-mark {
+      animation: none;
+      stroke-dashoffset: 0;
+    }
+  }
+
+  /* Paper never hides content waiting for a scroll that will not happen. */
+  @media print {
+    html.js .reveal {
+      opacity: 1;
+      transform: none;
+    }
+  }
+
   .text-balance {
     text-wrap: balance;
   }
 
   .text-pretty {
     text-wrap: pretty;
+  }
+}
+
+@keyframes spinner-turn {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes sending-slide {
+  from {
+    transform: translateX(-100%);
+  }
+  to {
+    transform: translateX(250%);
+  }
+}
+
+@keyframes rise-in {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@keyframes draw {
+  to {
+    stroke-dashoffset: 0;
+  }
+}
+
+@keyframes nudge {
+  20% {
+    transform: translateX(-6px);
+  }
+  45% {
+    transform: translateX(5px);
+  }
+  70% {
+    transform: translateX(-3px);
+  }
+  100% {
+    transform: none;
   }
 }
 

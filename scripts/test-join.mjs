@@ -37,7 +37,7 @@ const base = () => ({
   email: `test.valid.${stamp}.${Math.random().toString(36).slice(2, 7)}@example.com`,
   phone: "+1 (555) 123-4567",
   position: "Point guard",
-  year: "Freshman",
+  year: "Year I",
   message: "Testing the join endpoint.",
   consent: true,
 });

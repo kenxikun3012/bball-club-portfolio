@@ -24,7 +24,7 @@ export interface ContentEditorProps {
 }
 
 const inputClass =
-  "w-full rounded-sm border border-ink/15 bg-cream-50 px-4 py-2 type-small text-ink focus:border-accent focus:outline-none focus:ring-1 focus:ring-accent/30 disabled:opacity-60";
+  "w-full rounded-sm border border-ink/15 bg-cream-50 px-4 py-2 type-small text-ink focus:border-accent focus:outline-none focus:ring-2 focus:ring-accent/50 disabled:opacity-60";
 
 const labelClass = "mb-2 block type-label text-muted";
 
@@ -469,9 +469,9 @@ export function ContentEditor({
       {conflict !== null ? (
         <div
           role="alert"
-          className="mt-4 flex flex-wrap items-center justify-between gap-4 border border-accent/30 bg-accent-wash px-4 py-4"
+          className="mt-4 flex flex-wrap items-center justify-between gap-4 border border-accent/50 bg-accent-wash px-4 py-4"
         >
-          <p className="type-small text-accent">
+          <p className="type-small text-ink">
             Someone else saved revision {conflict}. Reload before saving your changes.
           </p>
           <button
@@ -486,8 +486,8 @@ export function ContentEditor({
       ) : null}
 
       {error ? (
-        <div role="alert" className="mt-4 border border-accent/30 bg-accent-wash px-4 py-4">
-          <p className="type-small text-accent">{error}</p>
+        <div role="alert" className="mt-4 border border-accent/50 bg-accent-wash px-4 py-4">
+          <p className="type-small font-medium text-ink">{error}</p>
           {issues.length > 0 ? (
             <ul className="mt-2 list-disc pl-4 type-small text-ink-soft">
               {issues.map((issue) => (
