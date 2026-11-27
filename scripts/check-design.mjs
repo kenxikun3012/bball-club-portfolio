@@ -18,7 +18,7 @@ const SPACE_UTILS =
   "p|px|py|pt|pb|pl|pr|m|mx|my|mt|mb|ml|mr|gap|gap-x|gap-y|" +
   "space-x|space-y|inset|inset-x|inset-y|top|bottom|left|right";
 
-const spaceRe = new RegExp(`(?<![\\w-])-?(?:${SPACE_UTILS})-(\\d+(?:\\.\\d+)?)(?![\\w-])`, "g");
+const spaceRe = new RegExp(`(?<![\\w-])-?(?:${SPACE_UTILS})-(\\d+(?:\\.\\d+)?)(?![\\w/-])`, "g"); // "/" skips fractions such as top-1/2
 const arbitraryPxRe = new RegExp(`(?<![\\w-])-?(?:${SPACE_UTILS})-\\[(-?[\\d.]+)px\\]`, "g");
 const fontSizeRe =
   /(?<![\w-])text-(?:xs|sm|base|lg|xl|2xl|3xl|4xl|5xl|6xl|7xl|8xl|9xl)(?![\w-])/g;

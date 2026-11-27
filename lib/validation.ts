@@ -40,12 +40,23 @@ const emailSchema = z
     "Enter a valid email address.",
   );
 
+/**
+ * Accepts the way people actually write Myanmar numbers ("09 123 456 789") as
+ * well as international ones, and stores everything as +<country><number>.
+ */
+export function normalizePhone(value: string): string {
+  const compact = value.replace(/[\s().-]/g, "");
+  if (compact.startsWith("00")) return `+${compact.slice(2)}`;
+  if (compact.startsWith("0")) return `+95${compact.slice(1)}`;
+  return compact;
+}
+
 const phoneSchema = z
   .string()
-  .transform((value) => value.replace(/[\s().-]/g, ""))
+  .transform(normalizePhone)
   .refine(
     (value) => /^\+[1-9]\d{6,14}$/.test(value),
-    "Enter a phone number in international format, e.g. +15551234567.",
+    "Enter a phone number like 09 123 456 789 (or +95 9 123 456 789).",
   );
 
 const messageSchema = z
@@ -53,6 +64,14 @@ const messageSchema = z
   .transform((value) => cleanText(value, 1_200))
   .refine((value) => value.length <= 1_200, "Message is too long.")
   .refine((value) => !HTML_TAG.test(value), "Message can't contain HTML.");
+
+/** Per-field schemas, shared with the browser so mistakes show up before sending. */
+export const joinFieldSchemas = {
+  name: nameSchema,
+  email: emailSchema,
+  phone: phoneSchema,
+  message: messageSchema,
+} as const;
 
 /**
  * `.strict()` matters: unknown keys (including Mongo operator keys such as

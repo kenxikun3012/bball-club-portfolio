@@ -1,8 +1,6 @@
 import { cn } from "@/lib/cn";
 
 interface SectionHeadingProps {
-  index: string;
-  eyebrow: string;
   title: React.ReactNode;
   intro?: React.ReactNode;
   id?: string;
@@ -10,9 +8,8 @@ interface SectionHeadingProps {
   tone?: "light" | "dark";
 }
 
+/** Section title + optional intro. The heading carries the section on its own. */
 export function SectionHeading({
-  index,
-  eyebrow,
   title,
   intro,
   id,
@@ -21,33 +18,16 @@ export function SectionHeading({
 }: SectionHeadingProps) {
   const dark = tone === "dark";
   return (
-    <div
-      className={cn(
-        "grid gap-8 md:grid-cols-12 md:items-end",
-        className,
-      )}
-    >
-      <div className="md:col-span-7">
-        <div
-          className={cn(
-            "flex items-center gap-4 type-label",
-            dark ? "text-accent-soft" : "text-accent",
-          )}
-        >
-          <span>{index}</span>
-          <span aria-hidden="true" className="h-px w-8 bg-secondary" />
-          <span>{eyebrow}</span>
-        </div>
-        <h2
-          id={id}
-          className={cn(
-            "mt-8 type-h2 text-balance",
-            dark ? "text-cream-100" : "text-ink",
-          )}
-        >
-          {title}
-        </h2>
-      </div>
+    <div className={cn("grid gap-8 md:grid-cols-12 md:items-end", className)}>
+      <h2
+        id={id}
+        className={cn(
+          "type-h2 text-balance md:col-span-7",
+          dark ? "text-cream-100" : "text-ink",
+        )}
+      >
+        {title}
+      </h2>
       {intro ? (
         <p
           className={cn(

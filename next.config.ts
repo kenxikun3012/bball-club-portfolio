@@ -22,6 +22,12 @@ const nextConfig: NextConfig = {
           { key: "X-Content-Type-Options", value: "nosniff" },
           { key: "X-Frame-Options", value: "DENY" },
           { key: "Referrer-Policy", value: "strict-origin-when-cross-origin" },
+          { key: "Cross-Origin-Opener-Policy", value: "same-origin" },
+          // HSTS only where HTTPS is guaranteed. No includeSubDomains/preload on purpose:
+          // other subdomains of the club's domain are unaffected.
+          ...(process.env.NODE_ENV === "production"
+            ? [{ key: "Strict-Transport-Security", value: "max-age=31536000" }]
+            : []),
           {
             key: "Permissions-Policy",
             value: "camera=(), microphone=(), geolocation=()",

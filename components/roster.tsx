@@ -12,6 +12,8 @@ export function Roster({
   staff: StaffMember[];
   currentSeason: string;
 }) {
+  const playerCount = rosters.reduce((sum, roster) => sum + roster.players.length, 0);
+
   return (
     <section
       id="team"
@@ -22,20 +24,12 @@ export function Roster({
         <Reveal>
           <SectionHeading
             id="team-title"
-            index="02"
-            eyebrow="The roster"
-            title={
-              <>
-                Twenty-four players,
-                <br className="hidden sm:block" /> one standard.
-              </>
-            }
+            title={<>{playerCount} players, one standard.</>}
             intro={
               <>
-                Two squads, one standard. Start with the{" "}
-                <span className="text-secondary-ink">featured players</span> above, then
-                scan the full roster below — 12 starters and 12 development players in each
-                squad.
+                Meet the{" "}
+                <span className="text-secondary-ink">featured players</span> first, then
+                switch squads or filter the rest of the roster.
               </>
             }
           />
@@ -43,6 +37,7 @@ export function Roster({
 
         <RosterBoard rosters={rosters} currentSeason={currentSeason} />
 
+        {staff.length > 0 ? (
         <Reveal>
           <div className="mt-24 border-t border-secondary/40 pt-8">
             <div className="flex flex-col gap-2 sm:flex-row sm:items-end sm:justify-between">
@@ -54,12 +49,13 @@ export function Roster({
                 <div key={member.name} className="border-t border-secondary/40 pt-4">
                   <dt className="type-h4">{member.name}</dt>
                   <dd className="mt-2 type-label text-secondary-ink">{member.role}</dd>
-                  <dd className="mt-2 type-small text-ink-soft/75">{member.detail}</dd>
+                  <dd className="mt-2 type-small text-ink-soft">{member.detail}</dd>
                 </div>
               ))}
             </dl>
           </div>
         </Reveal>
+        ) : null}
       </div>
     </section>
   );

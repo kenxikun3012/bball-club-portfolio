@@ -4,12 +4,18 @@ import { redirect } from "next/navigation";
 import type { ObjectId } from "mongodb";
 import { getDb } from "@/lib/mongodb";
 import { hashIp } from "@/lib/rate-limit";
+import { logError } from "@/lib/log";
 
 /* ------------------------------------------------------------------ */
 /*  Admin authentication: scrypt passwords + opaque DB sessions.       */
 /* ------------------------------------------------------------------ */
 
 export type AdminRole = "owner" | "editor" | "viewer";
+
+/** Content writes are restricted to owners and editors. */
+export function canEditContent(role: AdminRole): boolean {
+  return role === "owner" || role === "editor";
+}
 
 export interface AdminUser {
   _id: ObjectId;
@@ -20,6 +26,9 @@ export interface AdminUser {
   failedAttempts?: number;
   lockedUntil?: Date | null;
   lastLoginAt?: Date | null;
+  /** Set for temp passwords: the session is unusable until the password is changed. */
+  mustChangePassword?: boolean;
+  passwordChangedAt?: Date;
   createdAt: Date;
   updatedAt?: Date;
 }
@@ -116,13 +125,31 @@ export async function destroyAllAdminSessions(userId: ObjectId): Promise<void> {
   await db.collection("admin_sessions").deleteMany({ userId });
 }
 
+/** Revoke every session of the user except the one identified by `keepToken`. */
+export async function destroyOtherAdminSessions(
+  userId: ObjectId,
+  keepToken: string,
+): Promise<void> {
+  const db = await getDb();
+  await db
+    .collection("admin_sessions")
+    .deleteMany({ userId, tokenHash: { $ne: hashToken(keepToken) } });
+}
+
 export interface SessionContext {
   user: AdminUser;
   token: string;
 }
 
-/** Validate the session cookie against the database (Node runtime only). */
-export async function getAdminSession(): Promise<SessionContext | null> {
+/**
+ * Validate the session cookie against the database (Node runtime only).
+ *
+ * Users who must change their password get no session by default, so every API
+ * is closed to them. Only the password endpoint/page opt in with `allowMustChange`.
+ */
+export async function getAdminSession(
+  options: { allowMustChange?: boolean } = {},
+): Promise<SessionContext | null> {
   const cookieStore = await cookies();
   const token = cookieStore.get(SESSION_COOKIE)?.value;
   if (!token) return null;
@@ -143,6 +170,7 @@ export async function getAdminSession(): Promise<SessionContext | null> {
       _id: session.userId,
     })) as AdminUser | null;
     if (!user || user.disabled) return null;
+    if (user.mustChangePassword && !options.allowMustChange) return null;
 
     // Extend the idle window at most once every few minutes.
     if (now.getTime() - session.lastSeenAt.getTime() > TOUCH_INTERVAL_MS) {
@@ -154,14 +182,15 @@ export async function getAdminSession(): Promise<SessionContext | null> {
 
     return { user, token };
   } catch (error) {
-    console.error("[auth] session lookup failed", error);
+    logError("auth", "session lookup failed", error);
     return null;
   }
 }
 
 export async function requireAdminPage(): Promise<AdminUser> {
-  const session = await getAdminSession();
+  const session = await getAdminSession({ allowMustChange: true });
   if (!session) redirect("/admin/login");
+  if (session.user.mustChangePassword) redirect("/admin/change-password");
   return session.user;
 }
 
@@ -179,14 +208,15 @@ interface AuthRateDoc {
   expiresAt: Date;
 }
 
-async function consumeAuthAttempt(
+export async function consumeAuthAttempt(
   key: string,
   limit: number,
+  windowMs: number = AUTH_WINDOW_MS,
 ): Promise<{ allowed: boolean; retryAfterSeconds: number }> {
   const db = await getDb();
   const limits = db.collection<AuthRateDoc>("auth_rate_limits");
   const now = new Date();
-  const expiresAt = new Date(now.getTime() + AUTH_WINDOW_MS);
+  const expiresAt = new Date(now.getTime() + windowMs);
 
   const bumped = await limits.findOneAndUpdate(
     { _id: key, expiresAt: { $gt: now }, count: { $lt: limit } },
@@ -214,7 +244,7 @@ async function consumeAuthAttempt(
     );
     return { allowed: true, retryAfterSeconds: 0 };
   } catch {
-    return { allowed: false, retryAfterSeconds: Math.ceil(AUTH_WINDOW_MS / 1000) };
+    return { allowed: false, retryAfterSeconds: Math.ceil(windowMs / 1000) };
   }
 }
 
@@ -229,6 +259,20 @@ export async function consumeLoginAttempt({
   const emailResult = await consumeAuthAttempt(`login:email:${emailHash}`, EMAIL_ATTEMPTS);
   if (!emailResult.allowed) return emailResult;
   return consumeAuthAttempt(`login:ip:${hashIp(ip)}`, IP_ATTEMPTS);
+}
+
+/** Password-change guessing guard: 5 attempts per 15 minutes per user. */
+export async function consumePasswordAttempt(
+  userId: ObjectId,
+): Promise<{ allowed: boolean; retryAfterSeconds: number }> {
+  return consumeAuthAttempt(`pw:user:${userId.toHexString()}`, EMAIL_ATTEMPTS);
+}
+
+export async function resetPasswordAttempts(userId: ObjectId): Promise<void> {
+  const db = await getDb();
+  await db.collection<AuthRateDoc>("auth_rate_limits").deleteOne({
+    _id: `pw:user:${userId.toHexString()}`,
+  });
 }
 
 export async function resetLoginAttempts({

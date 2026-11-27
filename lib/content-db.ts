@@ -1,3 +1,5 @@
+import { unstable_cache } from "next/cache";
+import { logWarn } from "@/lib/log";
 import { getDb } from "@/lib/mongodb";
 import type {
   Achievement,
@@ -24,6 +26,27 @@ import type {
  */
 
 export type ContentId = "club" | "members" | "hallOfFame" | "achievements" | "activities";
+
+/** Documents exposed by the Phase 2 admin editor. */
+export const EDITABLE_CONTENT_IDS = [
+  "members",
+  "hallOfFame",
+  "achievements",
+  "activities",
+] as const;
+
+export type EditableContentId = (typeof EDITABLE_CONTENT_IDS)[number];
+
+export function isEditableContentId(value: string): value is EditableContentId {
+  return (EDITABLE_CONTENT_IDS as readonly string[]).includes(value);
+}
+
+export interface ContentSnapshot<T> {
+  data: T;
+  revision: number;
+  updatedAt?: Date;
+  updatedBy?: string;
+}
 
 export interface ContentDocument<T> {
   _id: ContentId;
@@ -75,6 +98,31 @@ async function loadFallback<T>(file: string): Promise<T> {
   }
 }
 
+/** Cache tag for one content document; the admin save route expires it. */
+export const contentTag = (id: ContentId) => `content:${id}`;
+
+/** Safety net so edits made outside the admin (db:seed, Atlas) still appear eventually. */
+const CONTENT_CACHE_SECONDS = 300;
+
+class ContentMissingError extends Error {}
+
+/**
+ * Cached read of one document. Failures and missing documents THROW, and thrown
+ * results are never cached, so a database blip or an unseeded database cannot pin
+ * the JSON fallback in the cache.
+ */
+function readCachedDocument<T>(id: ContentId): Promise<T> {
+  return unstable_cache(
+    async () => {
+      const document = await readDocument<T>(id);
+      if (!document) throw new ContentMissingError(id);
+      return document.data;
+    },
+    ["content-db", id],
+    { tags: [contentTag(id)], revalidate: CONTENT_CACHE_SECONDS },
+  )();
+}
+
 async function getContentData<T>(id: ContentId): Promise<T> {
   // Never touch the database during `next build` — deployments may not have
   // network access to Atlas at build time, and pages are rendered on demand.
@@ -83,14 +131,13 @@ async function getContentData<T>(id: ContentId): Promise<T> {
   }
 
   try {
-    const document = await readDocument<T>(id);
-    if (document) return document.data;
-    console.warn(`[content-db] "${id}" missing — using JSON seed fallback. Run npm run db:seed.`);
+    return await readCachedDocument<T>(id);
   } catch (error) {
-    console.warn(
-      `[content-db] database unavailable for "${id}" — using JSON seed fallback.`,
-      error instanceof Error ? error.message : error,
-    );
+    if (error instanceof ContentMissingError) {
+      logWarn("content-db", `"${id}" missing — using JSON seed fallback. Run npm run db:seed.`);
+    } else {
+      logWarn("content-db", `database unavailable for "${id}" — using JSON seed fallback.`, error);
+    }
   }
   return loadFallback<T>(id);
 }
@@ -113,6 +160,32 @@ export async function getAchievements(): Promise<AchievementsData> {
 
 export async function getActivities(): Promise<ActivitiesData> {
   return getContentData<ActivitiesData>("activities");
+}
+
+/**
+ * Read a document together with its revision for the admin editor.
+ * Missing documents fall back to the JSON seed at revision 0 so the first
+ * save creates the Mongo document.
+ */
+export async function getContentSnapshot<T = Record<string, unknown>>(
+  id: ContentId,
+): Promise<ContentSnapshot<T>> {
+  try {
+    const document = await readDocument<T>(id);
+    if (document) {
+      return {
+        data: document.data,
+        revision: document.revision,
+        updatedAt: document.updatedAt,
+        updatedBy: document.updatedBy,
+      };
+    }
+    logWarn("content-db", `"${id}" missing — admin editor is using the JSON seed.`);
+  } catch (error) {
+    logWarn("content-db", `database unavailable for "${id}" — admin editor is using the JSON seed.`, error);
+  }
+
+  return { data: await loadFallback<T>(id), revision: 0 };
 }
 
 export async function getSiteContent(): Promise<SiteContent> {

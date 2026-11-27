@@ -1,10 +1,9 @@
 "use client";
 
-import { useCallback, useRef, useState } from "react";
+import { ArrowLeft, ArrowRight } from "@/components/icons";
+import { useCarousel } from "@/components/use-carousel";
 import { FeaturedCard } from "@/components/featured-card";
 import type { RosterPlayer } from "@/lib/content";
-
-const GAP_PX = 32; // matches gap-8
 
 /** Horizontal featured-players carousel (all screen sizes). */
 export function FeaturedCarousel({
@@ -14,33 +13,9 @@ export function FeaturedCarousel({
   players: RosterPlayer[];
   rosterLabel: string;
 }) {
-  const trackRef = useRef<HTMLDivElement>(null);
-  const [active, setActive] = useState(0);
-
-  const scrollToIndex = useCallback(
-    (index: number) => {
-      const track = trackRef.current;
-      const card = track?.firstElementChild as HTMLElement | null;
-      if (!track || !card) return;
-
-      const clamped = Math.max(0, Math.min(index, players.length - 1));
-      const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-      track.scrollTo({
-        left: clamped * (card.offsetWidth + GAP_PX),
-        behavior: reduce ? "auto" : "smooth",
-      });
-    },
-    [players.length],
-  );
-
-  const handleScroll = () => {
-    const track = trackRef.current;
-    const card = track?.firstElementChild as HTMLElement | null;
-    if (!track || !card) return;
-
-    const index = Math.round(track.scrollLeft / (card.offsetWidth + GAP_PX));
-    setActive(Math.max(0, Math.min(index, players.length - 1)));
-  };
+  const { trackRef, active, atStart, atEnd, progress, onScroll, previous, next } =
+    useCarousel(players.length);
+  const position = atEnd ? players.length : active + 1;
 
   if (players.length === 0) return null;
 
@@ -54,35 +29,38 @@ export function FeaturedCarousel({
       <div className="flex flex-wrap items-center justify-between gap-4">
         <h3 className="type-label text-secondary-ink">Featured players</h3>
         <div className="flex items-center gap-4">
-          <p aria-live="polite" className="type-label text-muted tabular-nums">
-            {String(active + 1).padStart(2, "0")} /{" "}
+          <p className="type-label text-muted tabular-nums">
+            {String(position).padStart(2, "0")} /{" "}
             {String(players.length).padStart(2, "0")}
           </p>
           <button
             type="button"
-            onClick={() => scrollToIndex(active - 1)}
-            disabled={active === 0}
+            onClick={previous}
+            disabled={atStart}
             aria-label="Previous featured player"
-            className="flex h-10 w-10 items-center justify-center rounded-full border border-ink/15 text-ink transition-colors hover:border-secondary disabled:opacity-30"
+            className="flex h-11 w-11 items-center justify-center rounded-full border border-ink/15 text-ink transition-colors hover:border-secondary disabled:cursor-not-allowed disabled:opacity-30"
           >
-            <span aria-hidden="true">←</span>
+            <ArrowLeft />
           </button>
           <button
             type="button"
-            onClick={() => scrollToIndex(active + 1)}
-            disabled={active === players.length - 1}
+            onClick={next}
+            disabled={atEnd}
             aria-label="Next featured player"
-            className="flex h-10 w-10 items-center justify-center rounded-full border border-ink/15 text-ink transition-colors hover:border-secondary disabled:opacity-30"
+            className="flex h-11 w-11 items-center justify-center rounded-full border border-ink/15 text-ink transition-colors hover:border-secondary disabled:cursor-not-allowed disabled:opacity-30"
           >
-            <span aria-hidden="true">→</span>
+            <ArrowRight />
           </button>
         </div>
       </div>
 
       <div
         ref={trackRef}
-        onScroll={handleScroll}
-        className="-mx-6 mt-4 flex snap-x snap-mandatory gap-8 overflow-x-auto overscroll-x-contain px-6 pb-2 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden md:-mx-10 md:px-10"
+        onScroll={onScroll}
+        tabIndex={0}
+        role="group"
+        aria-label="Featured players, scrollable"
+        className="-mx-6 mt-4 flex snap-x snap-mandatory gap-8 overflow-x-auto overscroll-x-contain scroll-px-6 px-6 pb-2 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden md:-mx-10 md:scroll-px-10 md:px-10 focus-visible:outline-2 focus-visible:outline-accent"
       >
         {players.map((player, index) => (
           <div
@@ -100,7 +78,7 @@ export function FeaturedCarousel({
       <div className="mt-4 h-px w-full bg-ink/10" aria-hidden="true">
         <div
           className="h-px bg-secondary transition-[width] duration-300 ease-out"
-          style={{ width: `${((active + 1) / players.length) * 100}%` }}
+          style={{ width: `${progress * 100}%` }}
         />
       </div>
     </div>

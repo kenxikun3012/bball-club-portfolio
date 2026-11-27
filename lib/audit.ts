@@ -1,4 +1,5 @@
 import { getDb } from "@/lib/mongodb";
+import { logError } from "@/lib/log";
 
 export interface AuditEntry {
   actorEmail: string;
@@ -22,6 +23,6 @@ export async function logAudit(entry: AuditEntry): Promise<void> {
     });
   } catch (error) {
     // Auditing must never block the action itself.
-    console.error("[audit] failed to write entry", error);
+    logError("audit", "failed to write entry", error);
   }
 }

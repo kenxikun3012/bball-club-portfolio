@@ -13,6 +13,7 @@ import {
 import { logAudit } from "@/lib/audit";
 import { hashIp } from "@/lib/rate-limit";
 import { clientIp, hasJsonContentType, isSameOrigin } from "@/lib/http";
+import { logError } from "@/lib/log";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -115,7 +116,7 @@ export async function POST(request: Request) {
     response.cookies.set(SESSION_COOKIE, session.token, sessionCookieOptions());
     return response;
   } catch (error) {
-    console.error("[api/admin/auth/login] failed", error);
+    logError("api/admin/auth/login", "failed", error);
     return NextResponse.json(
       { ok: false, message: "Something went wrong. Please try again." },
       { status: 503 },

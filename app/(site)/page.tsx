@@ -17,23 +17,28 @@ export default async function Home() {
   return (
     <>
       <Hero club={content.club} />
-      <Ticker stats={content.club.stats} founded={content.club.founded} />
+      <Ticker
+        stats={content.club.stats}
+        founded={content.club.founded}
+        homeCourt={content.club.homeCourt}
+      />
       <About club={content.club} />
       <Roster
         rosters={content.rosters}
         staff={content.staff}
         currentSeason={content.club.currentSeason}
       />
+      <Activities
+        activitiesIntro={content.activitiesIntro}
+        gallery={content.gallery}
+        upcoming={content.upcoming}
+        training={content.club.training}
+      />
       <HallOfFame hallOfFame={content.hallOfFame} />
       <Achievements
         achievements={content.achievements}
         achievementSummary={content.achievementSummary}
         club={content.club}
-      />
-      <Activities
-        activitiesIntro={content.activitiesIntro}
-        gallery={content.gallery}
-        upcoming={content.upcoming}
       />
       <Contact club={content.club} />
       <div aria-hidden="true" className="mx-auto max-w-[1240px] px-6 pb-16 md:px-10">
